@@ -8,8 +8,6 @@ import (
 
 type UserType int
 
-type UserType int
-
 const (
 	UNKNOWN UserType = iota
 	STUDENT

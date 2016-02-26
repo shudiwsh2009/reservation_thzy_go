@@ -181,7 +181,7 @@ func SubmitFeedbackByStudent(w http.ResponseWriter, r *http.Request, userId stri
 			scoresInt = append(scoresInt, pi)
 		}
 	}
-	_, err := sl.SubmitFeedbackByStudent(reservationId, consultingCount, scores, help, drawback, userId, userType)
+	_, err := sl.SubmitFeedbackByStudent(reservationId, consultingCount, scoresInt, help, drawback, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
 		return nil

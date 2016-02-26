@@ -7,7 +7,6 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/controllers"
 	"github.com/shudiwsh2009/reservation_thzy_go/models"
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
-	"github.com/shudiwsh2009/reservation_thzy_go/workflow"
 	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"
