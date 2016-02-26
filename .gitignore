@@ -1,0 +1,7 @@
+.idea
+*.iml
+.DS_Store
+~$*
+*.swp
+*~
+reservation_thxl_go
