@@ -105,6 +105,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, fullname 
 		Problem:      problem,
 		Expectation:  expectation,
 		ExpectedTime: expectedTime,
+		Time: utils.GetNow(),
 	}
 	if models.UpsertReservation(reservation) != nil {
 		return nil, errors.New("获取数据失败")

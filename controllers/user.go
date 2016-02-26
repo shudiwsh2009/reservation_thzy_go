@@ -4,8 +4,8 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/buslogic"
 	"github.com/shudiwsh2009/reservation_thzy_go/models"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 )
 
 func StudentRegister(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {

@@ -6,6 +6,7 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
 	"strings"
 	"time"
+"github.com/shudiwsh2009/reservation_thzy_go/workflow"
 )
 
 type AdminLogic struct {
@@ -270,6 +271,35 @@ func (al *AdminLogic) DeleteStudentAccountByAdmin(studentId string, userId strin
 	return nil
 }
 
+// 管理员导出知情同意书
+func (al *AdminLogic) ExportStudentByAdmin(reservationId string, userId string, userType models.UserType) (string, error) {
+	if len(userId) == 0 {
+		return "", errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return "", errors.New("权限不足")
+	}
+	admin, err := models.GetAdminById(userId)
+	if err != nil || admin.UserType != models.ADMIN {
+		return "", errors.New("管理员账户出错,请联系技术支持")
+	}
+	reservation, err := models.GetReservationById(reservationId)
+	if err != nil {
+		return "", errors.New("咨询已下架")
+	} else if reservation.Status != models.RESERVATED {
+		return "", errors.New("咨询未被预约")
+	}
+	student, err := models.GetStudentById(reservation.StudentId)
+	if err != nil {
+		return "", errors.New("学生未注册")
+	}
+	filename := "student_" + student.Username + "_" +
+		reservation.StartTime.In(utils.Location).Format(utils.DATE_PATTERN) + utils.CsvSuffix
+	if err = workflow.ExportStudentInfo(student, reservation, filename); err != nil {
+		return "", err
+	}
+	return "/" + utils.ExportFolder + filename, nil
+}
+
 // 管理员查询学生信息
 func (al *AdminLogic) QueryStudentInfoByAdmin(studentUsername string,
 	userId string, userType models.UserType) (*models.Student, []*models.Reservation, error) {
@@ -295,7 +325,6 @@ func (al *AdminLogic) QueryStudentInfoByAdmin(studentUsername string,
 	return student, reservations, nil
 }
 
-/**
 // 管理员导出咨询
 func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId string, userType models.UserType) (string, error) {
 	if len(userId) == 0 {
@@ -303,7 +332,7 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 	} else if userType != models.ADMIN {
 		return "", errors.New("权限不足")
 	}
-	admin, err := models.GetUserById(userId)
+	admin, err := models.GetAdminById(userId)
 	if err != nil || admin.UserType != models.ADMIN {
 		return "", errors.New("管理员账户出错,请联系技术支持")
 	}
@@ -319,12 +348,11 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 	if len(reservations) == 0 {
 		return "", nil
 	}
-	if err = utils.ExportReservationsToExcel(reservations, filename); err != nil {
+	if err = workflow.ExportReservations(reservations, filename); err != nil {
 		return "", err
 	}
 	return "/" + utils.ExportFolder + filename, nil
 }
-**/
 
 // 查找咨询师
 // 查找顺序:全名 > 工号 > 手机号

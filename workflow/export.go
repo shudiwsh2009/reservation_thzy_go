@@ -5,76 +5,60 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
 )
 
-func ExportStudentInfo(student *models.Student, filename string) error {
-	//	data := make([][]string, 0)
-	//	data = append(data, []string{"档案分类", student.ArchiveCategory, "档案编号", student.ArchiveNumber})
-	//	// 学生基本信息
-	//	data = append(data, []string{"学号", student.Username})
-	//	data = append(data, []string{"姓名", student.Fullname})
-	//	data = append(data, []string{"性别", student.Gender})
-	//	data = append(data, []string{"出生日期", student.Birthday})
-	//	data = append(data, []string{"系别", student.School})
-	//	data = append(data, []string{"年级", student.Grade})
-	//	data = append(data, []string{"现住址", student.CurrentAddress})
-	//	data = append(data, []string{"家庭住址", student.FamilyAddress})
-	//	data = append(data, []string{"联系电话", student.Mobile})
-	//	data = append(data, []string{"Email", student.Email})
-	//	if !student.Experience.IsEmpty() {
-	//		data = append(data, []string{"咨询经历", "时间", student.Experience.Time, "地点", student.Experience.Location,
-	//			"咨询师姓名", student.Experience.Teacher})
-	//	} else {
-	//		data = append(data, []string{"咨询经历", "无"})
-	//	}
-	//	data = append(data, []string{"父亲", "年龄", student.FatherAge, "职业", student.FatherJob, "学历", student.FatherEdu})
-	//	data = append(data, []string{"母亲", "年龄", student.MotherAge, "职业", student.MotherJob, "学历", student.MotherEdu})
-	//	data = append(data, []string{"父母婚姻状况", student.ParentMarriage})
-	//	data = append(data, []string{"在近三个月里，是否发生了对你有重大意义的事（如亲友的死亡、法律诉讼、失恋等）？", student.Significant})
-	//	data = append(data, []string{"你现在需要接受帮助的主要问题是什么？", student.Problem})
-	//	bindedTeacher, err := models.GetTeacherById(student.BindedTeacherId)
-	//	if err != nil {
-	//		data = append(data, []string{"匹配咨询师", "无"})
-	//	} else {
-	//		data = append(data, []string{"匹配咨询师", bindedTeacher.Username, bindedTeacher.Fullname})
-	//	}
-	//	data = append(data, []string{"危机等级", strconv.Itoa(student.CrisisLevel)})
-	//	data = append(data, []string{""})
-	//	data = append(data, []string{""})
-	//
-	//	//咨询小结
-	//	if reservations, err := models.GetReservationsByStudentId(student.Id.Hex()); err == nil {
-	//		for i, r := range reservations {
-	//			teacher, err := models.GetTeacherById(r.TeacherId)
-	//			if err != nil {
-	//				continue
-	//			}
-	//			data = append(data, []string{"咨询小结" + strconv.Itoa(i+1)})
-	//			data = append(data, []string{"咨询师", teacher.Username, teacher.Fullname})
-	//			data = append(data, []string{"咨询日期", r.StartTime.In(utils.Location).Format(utils.DATE_PATTERN)})
-	//			if !r.TeacherFeedback.IsEmpty() {
-	//				data = append(data, []string{"评估分类", models.FeedbackAllCategory[r.TeacherFeedback.Category]})
-	//				participants := []string{"出席人员"}
-	//				for j := 0; j < len(r.TeacherFeedback.Participants); j++ {
-	//					if r.TeacherFeedback.Participants[j] > 0 {
-	//						participants = append(participants, models.Reservation_Participants[j])
-	//					}
-	//				}
-	//				data = append(data, participants)
-	//				data = append(data, []string{"问题评估", r.TeacherFeedback.Problem})
-	//				data = append(data, []string{"咨询记录", r.TeacherFeedback.Record})
-	//			}
-	//			if !r.StudentFeedback.IsEmpty() {
-	//				scores := []string{"来访者反馈"}
-	//				for _, s := range r.StudentFeedback.Scores {
-	//					scores = append(scores, strconv.Itoa(s))
-	//				}
-	//				data = append(data, scores)
-	//			}
-	//		}
-	//		data = append(data, []string{""})
-	//	}
-	//	if err := utils.WriteToCSV(data, filename); err != nil {
-	//		return err
-	//	}
+func ExportStudentInfo(student *models.Student, reservation *models.Reservation, filename string) error {
+	data := make([][]string, 0)
+	data = append(data, []string{"职业生涯咨询知情同意书"})
+	data = append(data, []string{"姓名：", student.Fullname, "性别：", student.Gender})
+	data = append(data, []string{"年龄：", student.Age, "出生日期：", student.Birthday})
+	data = append(data, []string{"民族：", student.Ethnic, "入学年份：", student.EnterYear})
+	data = append(data, []string{"生源地：", student.SourcePlace, "院系：", student.College})
+	data = append(data, []string{"学生电子邮件：", student.Email, "原就读学校（本科/硕士）：", student.OriginalSchool})
+	data = append(data, []string{"原专业（如有转换）：", student.OriginalMajor, "联系电话：", student.Mobile})
+	data = append(data, []string{"婚姻状况：", student.Marriage})
+	data = append(data, []string{"健康状况：", student.Health})
+	data = append(data, []string{"父亲职业：", student.FatherJob, "母亲职业：", student.MotherJob})
+	data = append(data, []string{"是否有兄弟姐妹：", student.HasBrotherOrSister})
+	data = append(data, []string{"以前是否接受过职业咨询：", student.HasCareerConsulting})
+	data = append(data, []string{"以前是否接受过心理咨询：", student.HasMentalConsulting})
+	data = append(data, []string{"目前是否在接受其他咨询：", student.OtherConsultingNow})
+	data = append(data, []string{"是否有工作经验：", student.WorkingExperience})
+	data = append(data, []string{"我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用一下哪些方法："})
+	data = append(data, []string{"此次来最主要想解决的问题是：", reservation.StudentExpectation.Problem})
+	data = append(data, []string{"你期望职业生涯咨询帮助达到什么样的效果：", reservation.StudentExpectation.Expectation})
+	data = append(data, []string{"期望的咨询次数约为：", reservation.StudentExpectation.ExpectedTime})
+	data = append(data, []string{"请写下紧急联系人的姓名：", student.EmergencyPerson, "电话：", student.EmergencyMobile})
+	data = append(data, []string{"填写日期：", reservation.StudentExpectation.Time.In(utils.Location).Format(utils.DATE_PATTERN)})
+	if err := utils.WriteToCSV(data, filename); err != nil {
+		return err
+	}
+	return nil
+}
+
+func ExportReservations(reservations []*models.Reservation, filename string) error {
+	data := make([][]string, 0)
+	data = append(data, []string{"日期", "星期", "时间段", "咨询师", "来访者", "性别", "入学年份", "院系", "来访次数"})
+	for _, res := range reservations {
+		row := make([]string, 0)
+		row = append(row, res.StartTime.In(utils.Location).Format(utils.DATE_PATTERN))
+		row = append(row, utils.Weekdays[res.StartTime.In(utils.Location).Weekday()])
+		row = append(row, res.StartTime.In(utils.Location).Format(utils.CLOCK_PATTERN) + " - " +
+			res.EndTime.In(utils.Location).Format(utils.CLOCK_PATTERN))
+		if teacher, err := models.GetTeacherById(res.TeacherId); err == nil {
+			row = append(row, teacher.Fullname)
+		} else {
+			row = append(row, "")
+		}
+		if student, err := models.GetStudentById(res.StudentId); err == nil {
+			row = append(row, student.Fullname)
+			row = append(row, student.Gender)
+			row = append(row, student.EnterYear)
+			row = append(row, student.College)
+		}
+		data = append(data, row)
+	}
+	if err := utils.WriteToCSV(data, filename); err != nil {
+		return err
+	}
 	return nil
 }
 

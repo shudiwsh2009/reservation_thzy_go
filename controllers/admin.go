@@ -7,8 +7,8 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
-"strings"
 )
 
 func ViewReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
@@ -300,6 +300,22 @@ func DeleteStudentAccountByAdmin(w http.ResponseWriter, r *http.Request, userId 
 	return result
 }
 
+func ExportStudentByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	studentId := r.PostFormValue("student_id")
+
+	var result = map[string]interface{}{"state": "SUCCESS"}
+	var al = buslogic.AdminLogic{}
+
+	url, err := al.ExportStudentByAdmin(studentId, userId, userType)
+	if err != nil {
+		ErrorHandler(w, r, err)
+		return nil
+	}
+	result["url"] = url
+
+	return result
+}
+
 func QueryStudentInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	studentUsername := r.PostFormValue("student_username")
 
@@ -374,7 +390,6 @@ func QueryStudentInfoByAdmin(w http.ResponseWriter, r *http.Request, userId stri
 	return result
 }
 
-/*
 func ExportReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	r.ParseForm()
 	reservationIds := []string(r.Form["reservation_ids"])
@@ -391,7 +406,6 @@ func ExportReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId st
 
 	return result
 }
-*/
 
 func SearchTeacherByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	teacherUsername := r.PostFormValue("teacher_username")

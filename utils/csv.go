@@ -10,11 +10,12 @@ import (
 )
 
 const (
-	DefaultStudentExportExcelFilename   = "student_export_template.xlsx"
-	DefaultTimetableExportExcelFilename = "timetable_export_template.xlsx"
-	ExportFolder                        = "assets/export/"
-	ExcelSuffix                         = ".xlsx"
-	CsvSuffix                           = ".csv"
+	DefaultStudentExportExcelFilename     = "student_export_template.xlsx"
+	DefaultReservationExportExcelFilename = "reservation_export_template.xlsx"
+	DefaultTimetableExportExcelFilename   = "timetable_export_template.xlsx"
+	ExportFolder                          = "assets/export/"
+	ExcelSuffix                           = ".xlsx"
+	CsvSuffix                             = ".csv"
 )
 
 func WriteToCSV(data [][]string, filename string) error {

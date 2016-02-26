@@ -31,7 +31,8 @@ func (rs ReservationStatus) String() string {
 type StudentExpectation struct {
 	Problem      string `bson:"problem"`
 	Expectation  string `bson:"expectation"`
-	ExpectedTime string    `bson:"expected_time"`
+	ExpectedTime string `bson:"expected_time"`
+	Time time.Time `bson:"time"`
 }
 
 type StudentFeedback struct {
@@ -60,16 +61,16 @@ func (sf StudentFeedback) ToJson() map[string]interface{} {
 }
 
 type Reservation struct {
-	Id                 bson.ObjectId     `bson:"_id"`
-	CreateTime         time.Time         `bson:"create_time"`
-	UpdateTime         time.Time         `bson:"update_time"`
-	StartTime          time.Time         `bson:"start_time"` // indexed
-	EndTime            time.Time         `bson:"end_time"`
-	Status             ReservationStatus `bson:"status"`
-	TeacherId          string            `bson:"teacher_id"` // indexed
-	StudentId          string            `bson:"student_id"` // indexed
-	StudentExpectation StudentExpectation   `bson:"student_expectation"`
-	StudentFeedback    StudentFeedback   `bson:"student_feedback"`
+	Id                 bson.ObjectId      `bson:"_id"`
+	CreateTime         time.Time          `bson:"create_time"`
+	UpdateTime         time.Time          `bson:"update_time"`
+	StartTime          time.Time          `bson:"start_time"` // indexed
+	EndTime            time.Time          `bson:"end_time"`
+	Status             ReservationStatus  `bson:"status"`
+	TeacherId          string             `bson:"teacher_id"` // indexed
+	StudentId          string             `bson:"student_id"` // indexed
+	StudentExpectation StudentExpectation `bson:"student_expectation"`
+	StudentFeedback    StudentFeedback    `bson:"student_feedback"`
 }
 
 const CHECK_MESSAGE = "CHECK"
