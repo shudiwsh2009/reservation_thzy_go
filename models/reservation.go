@@ -68,7 +68,7 @@ type Reservation struct {
 	Status             ReservationStatus `bson:"status"`
 	TeacherId          string            `bson:"teacher_id"` // indexed
 	StudentId          string            `bson:"student_id"` // indexed
-	StudentExpectation StudentFeedback   `bson:"student_expectation"`
+	StudentExpectation StudentExpectation   `bson:"student_expectation"`
 	StudentFeedback    StudentFeedback   `bson:"student_feedback"`
 }
 
