@@ -20,6 +20,8 @@ func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId st
 		return nil
 	}
 	var studentJson = make(map[string]interface{})
+	studentJson["student_id"] = student.Id.Hex()
+	studentJson["student_username"] = student.Username
 	studentJson["student_fullname"] = student.Fullname
 	studentJson["gender"] = student.Gender
 	studentJson["college"] = student.College
