@@ -24,14 +24,18 @@ var reservationStatuses = [...]string{
 	"CLOSED",
 }
 
+func (rs ReservationStatus) String() string {
+	return reservationStatuses[rs-1]
+}
+
 type StudentExpectation struct {
 	Problem      string `bson:"problem"`
 	Expectation  string `bson:"expectation"`
-	ExpectedTime int    `bson:"expected_time"`
+	ExpectedTime string    `bson:"expected_time"`
 }
 
 type StudentFeedback struct {
-	ConsultingCount int       `bson:"consulting_count"`
+	ConsultingCount string    `bson:"consulting_count"`
 	Scores          []int     `bson:"scores"`
 	Help            string    `bson:"help"`
 	Drawback        string    `bson:"drawback"`
@@ -39,7 +43,7 @@ type StudentFeedback struct {
 }
 
 func (sf StudentFeedback) IsEmpty() bool {
-	return sf.ConsultingCount == 0 || sf.Scores == nil || len(sf.Scores) == 0
+	return len(sf.ConsultingCount) == 0 || sf.Scores == nil || len(sf.Scores) == 0
 }
 
 func (sf StudentFeedback) ToJson() map[string]interface{} {

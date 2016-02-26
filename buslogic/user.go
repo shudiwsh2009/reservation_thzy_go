@@ -61,10 +61,10 @@ func (ul *UserLogic) AdminLogin(username string, password string) (*models.Admin
 
 // 学生注册
 func (ul *UserLogic) StudentRegister(username string, password string, fullname string, gender string, college string,
-	mobile string, email string, hasCareerConsulting bool, emergencyPerson string, emergencyMobile string,
+	mobile string, email string, hasCareerConsulting string, emergencyPerson string, emergencyMobile string,
 	age string, birthday string, ethnic string, enterYear string, sourcePlace string, originalSchool string,
-	originalMajor string, marriage string, health string, fatherJob string, motherJob string, hasBrotherOrSister bool,
-	brotherAge string, brotherJob string, hasMentalConsulting bool, otherConsultingNow string, workingExperience int,
+	originalMajor string, marriage string, health string, fatherJob string, motherJob string, hasBrotherOrSister string,
+	brotherAge string, brotherJob string, hasMentalConsulting string, otherConsultingNow string, workingExperience string,
 	workingPeriod string, knowingMethods []int) (*models.Student, error) {
 	if len(username) == 0 {
 		return nil, errors.New("用户名为空")
@@ -80,6 +80,8 @@ func (ul *UserLogic) StudentRegister(username string, password string, fullname 
 		return nil, errors.New("手机号格式不正确")
 	} else if !utils.IsEmail(email) {
 		return nil, errors.New("邮箱格式不正确")
+	} else if len(hasCareerConsulting) == 0 {
+		return nil, errors.New("是否接受过职业咨询为空")
 	} else if len(emergencyPerson) == 0 {
 		return nil, errors.New("紧急联系人为空")
 	} else if !utils.IsMobile(emergencyMobile) {

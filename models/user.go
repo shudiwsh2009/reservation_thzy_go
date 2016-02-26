@@ -45,11 +45,11 @@ type Student struct {
 	College             string `bson:"college"`
 	Mobile              string `bson:"mobile"`
 	Email               string `bson:"email"`
-	HasCareerConsulting bool   `bson:"has_career_consulting"`
+	HasCareerConsulting string   `bson:"has_career_consulting"`
 	EmergencyPerson     string `bson:"emergency_person"`
 	EmergencyMobile     string `bson:"emergency_mobile"`
 
-	Age                 int    `bson:"age"`
+	Age                 string    `bson:"age"`
 	Birthday            string `bson:"birthday"`
 	Ethnic              string `bson:"ethnic`
 	EnterYear           string `bson:"enter_year"`
@@ -60,12 +60,12 @@ type Student struct {
 	Health              string `bson:"health"`
 	FatherJob           string `bson:"father_job"`
 	MotherJob           string `bson:"mother_job"`
-	HasBrotherOrSister  bool   `bson:"has_brother_or_sister"`
+	HasBrotherOrSister  string   `bson:"has_brother_or_sister"`
 	BrotherAge          string `bson:"brother_age"`
 	BrotherJob          string `bson:"brother_job"`
-	HasMentalConsulting bool   `bson:"has_mental_consulting"`
+	HasMentalConsulting string   `bson:"has_mental_consulting"`
 	OtherConsultingNow  string `bson:"other_consulting_now"`
-	WorkingExperience   int    `bson:"working_experience"`
+	WorkingExperience   string    `bson:"working_experience"`
 	WorkingPeriod       string `bson:"working_period"`
 	KnowingMethods      []int  `bson:"knowing_methods"`
 }

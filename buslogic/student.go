@@ -13,11 +13,11 @@ type StudentLogic struct {
 
 // 学生预约咨询
 func (sl *StudentLogic) MakeReservationByStudent(reservationId string, fullname string, gender string, college string,
-	mobile string, email string, hasCareerConsulting bool, emergencyPerson string, emergencyMobile string,
+	mobile string, email string, hasCareerConsulting string, emergencyPerson string, emergencyMobile string,
 	age string, birthday string, ethnic string, enterYear string, sourcePlace string, originalSchool string,
-	originalMajor string, marriage string, health string, fatherJob string, motherJob string, hasBrotherOrSister bool,
-	brotherAge string, brotherJob string, hasMentalConsulting bool, otherConsultingNow string, workingExperience int,
-	workingPeriod string, knowingMethods []int, problem string, expectation string, expectedTime int,
+	originalMajor string, marriage string, health string, fatherJob string, motherJob string, hasBrotherOrSister string,
+	brotherAge string, brotherJob string, hasMentalConsulting string, otherConsultingNow string, workingExperience string,
+	workingPeriod string, knowingMethods []int, problem string, expectation string, expectedTime string,
 	userId string, userType models.UserType) (*models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
@@ -33,6 +33,8 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, fullname 
 		return nil, errors.New("手机号格式不正确")
 	} else if !utils.IsEmail(email) {
 		return nil, errors.New("邮箱格式不正确")
+	} else if len(hasCareerConsulting) == 0 {
+		return nil, errors.New("是否接受过职业咨询为空")
 	} else if len(emergencyPerson) == 0 {
 		return nil, errors.New("紧急联系人为空")
 	} else if !utils.IsMobile(emergencyMobile) {
@@ -142,7 +144,7 @@ func (sl *StudentLogic) GetFeedbackByStudent(reservationId string,
 }
 
 // 学生反馈
-func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, consultingCount int, scores []int,
+func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, consultingCount string, scores []int,
 	help string, drawback string, userId string, userType models.UserType) (*models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, errors.New("请先登录")
@@ -150,7 +152,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, consulting
 		return nil, errors.New("请重新登录")
 	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if len(scores) != 15 || len(help) == 0 || len(drawback) == 0 {
+	} else if len(consultingCount) == 0 || len(scores) != 15 || len(help) == 0 || len(drawback) == 0 {
 		return nil, errors.New("请完整填写反馈")
 	}
 	student, err := models.GetStudentById(userId)

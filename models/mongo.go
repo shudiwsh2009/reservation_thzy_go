@@ -39,7 +39,7 @@ func AddSimpleStudent(username string, password string) (*Student, error) {
 }
 
 func AddFullStudent(username string, password string, fullname string, gender string, college string, mobile string,
-	email string, hasCareerConsulting bool, emergencyPerson string, emergencyMobile string) (*Student, error) {
+	email string, hasCareerConsulting string, emergencyPerson string, emergencyMobile string) (*Student, error) {
 	if len(username) == 0 || len(password) == 0 || len(fullname) == 0 || len(gender) == 0 || len(college) == 0 ||
 		!utils.IsMobile(mobile) || !utils.IsEmail(email) || len(emergencyPerson == 0) || !utils.IsMobile(emergencyMobile) {
 		return nil, errors.New("字段不合法")
