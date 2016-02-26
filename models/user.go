@@ -40,31 +40,34 @@ type Student struct {
 	Password   string        `bson:"password"`
 	UserType   UserType      `bson:"user_type"`
 
-	Fullname         string `bson:"fullname"`
-	Gender           string `bson:"gender"`
-	College          string `bson:"college"`
-	Mobile           string `bson:"mobile"`
-	Email            string `bson:"email"`
-	CareerConsulting string `bson:"career_consulting"`
-	EmergencyPerson  string `bson:"emergency_person"`
-	EmergencyMobile  string `bson:"emergency_mobile"`
+	Fullname            string `bson:"fullname"`
+	Gender              string `bson:"gender"`
+	College             string `bson:"college"`
+	Mobile              string `bson:"mobile"`
+	Email               string `bson:"email"`
+	HasCareerConsulting bool   `bson:"has_career_consulting"`
+	EmergencyPerson     string `bson:"emergency_person"`
+	EmergencyMobile     string `bson:"emergency_mobile"`
 
-	Age                int      `bson:"age"`
-	Birthday           string   `bson:"birthday"`
-	Ethnic             string   `bson:"ethnic`
-	EnterYear          string   `bson:"enter_year"`
-	SourcePlace        string   `bson:"source_place"`
-	OriginalSchool     string   `bson:"original_school"`
-	OriginalMajor      string   `bson:"original_major"`
-	Marriage           string   `bson:"marrige"`
-	Health             string   `bson:"health"`
-	FatherJob          string   `bson:"father_job"`
-	MotherJob          string   `bson:"mother_job"`
-	BrotherOrSister    string   `bson:"brother_or_sister"`
-	MentalConsulting   string   `bson:"mental_consulting"`
-	OtherConsultingNow string   `bson:"other_consulting_now"`
-	WorkingExperience  string   `bson:"working_experience"`
-	KnowingMethods     []string `bson:"knowing_methods"`
+	Age                 int    `bson:"age"`
+	Birthday            string `bson:"birthday"`
+	Ethnic              string `bson:"ethnic`
+	EnterYear           string `bson:"enter_year"`
+	SourcePlace         string `bson:"source_place"`
+	OriginalSchool      string `bson:"original_school"`
+	OriginalMajor       string `bson:"original_major"`
+	Marriage            string `bson:"marrige"`
+	Health              string `bson:"health"`
+	FatherJob           string `bson:"father_job"`
+	MotherJob           string `bson:"mother_job"`
+	HasBrotherOrSister  bool   `bson:"has_brother_or_sister"`
+	BrotherAge          string `bson:"brother_age"`
+	BrotherJob          string `bson:"brother_job"`
+	HasMentalConsulting bool   `bson:"has_mental_consulting"`
+	OtherConsultingNow  string `bson:"other_consulting_now"`
+	WorkingExperience   int    `bson:"working_experience"`
+	WorkingPeriod       string `bson:"working_period"`
+	KnowingMethods      []int  `bson:"knowing_methods"`
 }
 
 type Teacher struct {

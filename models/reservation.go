@@ -25,8 +25,9 @@ var reservationStatuses = [...]string{
 }
 
 type StudentExpectation struct {
-	Problem     string `bson:"problem"`
-	Expectation string `bson:"expectation"`
+	Problem      string `bson:"problem"`
+	Expectation  string `bson:"expectation"`
+	ExpectedTime int    `bson:"expected_time"`
 }
 
 type StudentFeedback struct {
@@ -66,3 +67,5 @@ type Reservation struct {
 	StudentExpectation StudentFeedback   `bson:"student_expectation"`
 	StudentFeedback    StudentFeedback   `bson:"student_feedback"`
 }
+
+const CHECK_MESSAGE = "CHECK"
