@@ -161,7 +161,7 @@ func EditReservationByAdmin(w http.ResponseWriter, r *http.Request, userId strin
 	return result
 }
 
-func RemoveReservationByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+func RemoveReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	r.ParseForm()
 	reservationIds := []string(r.Form["reservation_ids"])
 
@@ -178,7 +178,7 @@ func RemoveReservationByAdmin(w http.ResponseWriter, r *http.Request, userId str
 	return result
 }
 
-func CancelReservationByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+func CancelReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	r.ParseForm()
 	reservationIds := []string(r.Form["reservation_ids"])
 
