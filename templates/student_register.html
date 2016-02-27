@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta name="HandheldFriendly" content="True">
+	    <meta name="MobileOptimized" content="320">
+	    <meta content="telephone=no" name="format-detection">
+	    <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=no">
+		<title>
+			学生职业发展指导中心预约系统
+		</title>
+		<link type="text/css" href="/assets/css/style.css" rel="stylesheet">
+		<script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
+	</head>
+	<body>
+		<div id="page_title">
+			学生职业发展指导中心<br>预约系统<br>学生注册
+		</div>
+
+		<div class="student_register">
+			＊加粗为必填项
+			<br><br>
+			<b>学　　号：</b><input id="username"/><br>
+			<b>密　　码：</b><input id="password" type="password"/><br>
+			<b>确认密码：</b><input id="password_confirm" type="password"/><br>
+			<br>
+			<b>姓　　名：</b><input id="fullname"><br>
+			<b>性　　别：</b><input id="gender"><br>
+			年　　龄：<input id="age"><br>
+			出生年月：<input id="birthday"><br>
+			民　　族：<input id="ethnic"><br>
+			生源地：　<input id="source_place"><br>
+			<b>院　　系：</b><input id="colledge"><br>
+			原就读学校（本科/硕士）：<input id="original_school"><br>
+			原专业（如有转换）：<input id="original_major"><br>
+			<b>电子邮件：</b><input id="email"><br>
+			<b>联系电话：</b><input id="mobile"><br>
+			婚姻状况：<select id="marriage"><option value="">请选择</option><option value="单身">单身</option>
+				<option value="恋爱">恋爱</option><option value="结婚">结婚</option>
+				<option value="其他">其他</option></select><br>
+			健康状况：<input id="health"><br>
+			父亲职业：<input id="father_job"><br>
+			母亲职业：<input id="mother_job"><br>
+			是否有兄弟姐妹：<br>
+			<input name="has_brother_or_sister" type="radio" value="否">否</input><input name="has_brother_or_sister" type="radio" value="是">是</input>，年龄<input id="brother_age" style="width:25px;"> 职业<input id="brother_job" style="width:35px;"><br>
+			<b>以前是否接受过职业咨询：</b><br><input name="has_career_consulting" type="radio" value="否">否</input><input name="has_career_consulting" type="radio" value="是">是</input><br>
+			以前是否接受过心理咨询：<br><input name="has_mental_consulting" type="radio" value="否">否</input><input name="has_mental_consulting" type="radio" value="是">是</input><br>
+			目前是否在接受其他咨询：<br><input name="has_other_consulting" type="radio" value="否">否</input><input name="has_other_consulting" type="radio" value="是">是</input>，为<input id="other_consulting_now" style="width:80px;"><br>
+			是否有工作经验：<br>
+			<input name="working_experience" type="radio" value="1">有全职工作经验，</input><input id="working_period_1" style="width:25px;">年<br>
+			<input name="working_experience" type="radio" value="2">有兼职工作经验或做过义工，累计工作时间：</input><input id="working_period_2" style="width:50px;"><br>
+			<input name="working_experience" type="radio" value="3">没有任何工作经验</input><br>
+			<b>紧急联系人信息</b><br>
+			<b>姓　　名：</b><input id="emergency_person"><br>
+			<b>电　　话：</b><input id="emergency_mobile"><br>
+			<div style="text-align: left">
+				<input id="agree" type="checkbox" checked="true">我已阅读并理解了<a href="/reservation/protocol" style="color: blue">知情同意书</a>，且知道我可以询问有关的问题。我同意参加职业生涯咨询。
+			</div>
+			<br>
+			<button class="btn btn-primary" type="button" onclick="studentRegister();">注册</button>
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="/reservation/student/login">已有账户</a>
+			<p style="font-size: 14px;">账号密码遇到任何问题，请在工作时间（周一至周五8:30-12:00；13:30-16:30，节假日除外）致电010-62783128。</p>
+		</div>
+		<div id="page_bottom"><br><br>清华大学学生职业发展指导中心<br>联系方式：010-62783128</div>
+
+	</body>
+	<script type="text/javascript" src="/assets/js/user.js"></script>
+</html>

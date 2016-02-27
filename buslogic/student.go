@@ -64,7 +64,7 @@ func (sl *StudentLogic) MakeReservationByStudent(reservationId string, fullname 
 	}
 	for _, r := range studentReservations {
 		if r.Status == models.RESERVATED && r.StartTime.After(utils.GetNow()) {
-			return nil, errors.New("你好！你已有一个咨询预约，请完成这次咨询后再预约下一次，或致电62782007取消已有预约。")
+			return nil, errors.New("你好！你已有一个咨询预约，请完成这次咨询后再预约下一次，或致电62783128取消已有预约。")
 		}
 	}
 	// 更新学生信息
