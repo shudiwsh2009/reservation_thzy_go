@@ -29,8 +29,9 @@
 			年　　龄：<input id="age"><br>
 			出生年月：<input id="birthday"><br>
 			民　　族：<input id="ethnic"><br>
+			入学年份：<input id="enter_year"><br>
 			生源地：　<input id="source_place"><br>
-			<b>院　　系：</b><input id="colledge"><br>
+			<b>院　　系：</b><input id="college"><br>
 			原就读学校（本科/硕士）：<input id="original_school"><br>
 			原专业（如有转换）：<input id="original_major"><br>
 			<b>电子邮件：</b><input id="email"><br>
@@ -42,14 +43,29 @@
 			父亲职业：<input id="father_job"><br>
 			母亲职业：<input id="mother_job"><br>
 			是否有兄弟姐妹：<br>
-			<input name="has_brother_or_sister" type="radio" value="否">否</input><input name="has_brother_or_sister" type="radio" value="是">是</input>，年龄<input id="brother_age" style="width:25px;"> 职业<input id="brother_job" style="width:35px;"><br>
-			<b>以前是否接受过职业咨询：</b><br><input name="has_career_consulting" type="radio" value="否">否</input><input name="has_career_consulting" type="radio" value="是">是</input><br>
-			以前是否接受过心理咨询：<br><input name="has_mental_consulting" type="radio" value="否">否</input><input name="has_mental_consulting" type="radio" value="是">是</input><br>
-			目前是否在接受其他咨询：<br><input name="has_other_consulting" type="radio" value="否">否</input><input name="has_other_consulting" type="radio" value="是">是</input>，为<input id="other_consulting_now" style="width:80px;"><br>
+			<input id="has_brother_or_sister_no" name="has_brother_or_sister" type="radio" value="否">否</input><input id="has_brother_or_sister_yes" name="has_brother_or_sister" type="radio" value="是">是</input>，年龄<input id="brother_age" style="width:25px;"> 职业<input id="brother_job" style="width:35px;"><br>
+			<b>以前是否接受过职业咨询：</b><br><input id="has_career_consulting_no" name="has_career_consulting" type="radio" value="否">否</input><input id="has_career_consulting_yes" name="has_career_consulting" type="radio" value="是">是</input><br>
+			以前是否接受过心理咨询：<br><input id="has_mental_consulting_no" name="has_mental_consulting" type="radio" value="否">否</input><input id="has_mental_consulting_yes" name="has_mental_consulting" type="radio" value="是">是</input><br>
+			目前是否在接受其他咨询：<br><input id="has_other_consulting_no" name="has_other_consulting" type="radio" value="否">否</input><input id="has_other_consulting_yes" name="has_other_consulting" type="radio" value="是">是</input>，为<input id="other_consulting_now" style="width:80px;"><br>
 			是否有工作经验：<br>
-			<input name="working_experience" type="radio" value="1">有全职工作经验，</input><input id="working_period_1" style="width:25px;">年<br>
-			<input name="working_experience" type="radio" value="2">有兼职工作经验或做过义工，累计工作时间：</input><input id="working_period_2" style="width:50px;"><br>
-			<input name="working_experience" type="radio" value="3">没有任何工作经验</input><br>
+			<input id="working_experience_1" name="working_experience" type="radio" value="1">有全职工作经验，</input><input id="working_period_1" style="width:25px;">年<br>
+			<input id="working_experience_2" name="working_experience" type="radio" value="2">有兼职工作经验或做过义工，累计工作时间：</input><input id="working_period_2" style="width:50px;"><br>
+			<input id="working_experience_3" name="working_experience" type="radio" value="3">没有任何工作经验</input><br><br>
+			我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用以下哪些方法：（可以多选）<br>
+			<input id="knowing_method_1" type="checkbox">与导师、辅导员交谈<br>
+			<input id="knowing_method_2" type="checkbox">与同学交谈<br>
+			<input id="knowing_method_3" type="checkbox">与家人交谈<br>
+			<input id="knowing_method_4" type="checkbox">与相关行业在职人员交谈<br>
+			<input id="knowing_method_5" type="checkbox">参加宣讲会、招聘会<br>
+			<input id="knowing_method_6" type="checkbox">参加相关讲座和工作坊<br>
+			<input id="knowing_method_7" type="checkbox">阅读报纸、书籍中的就业信息<br>
+			<input id="knowing_method_8" type="checkbox">浏览求职网站<br>
+			<input id="knowing_method_9" type="checkbox">选修职业辅导课程<br>
+			<input id="knowing_method_10" type="checkbox">到就业指导中心寻求帮助<br>
+			<input id="knowing_method_11" type="checkbox">向院系寻求相关就业资料<br>
+			<input id="knowing_method_12" type="checkbox">参加有关的职业生涯团体<br>
+			<input id="knowing_method_13" type="checkbox">参加过其他学生团体<br>
+			<input id="knowing_method_14" type="checkbox">在用人单位实习或者兼职<br><br>
 			<b>紧急联系人信息</b><br>
 			<b>姓　　名：</b><input id="emergency_person"><br>
 			<b>电　　话：</b><input id="emergency_mobile"><br>

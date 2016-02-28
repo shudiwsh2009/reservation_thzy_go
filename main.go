@@ -84,7 +84,7 @@ func main() {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	models.Mongo = session.DB("reservation_thxl")
+	models.Mongo = session.DB("reservation_thzy")
 	// 时区
 	if utils.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
 		fmt.Errorf("初始化时区失败：%v", err)
