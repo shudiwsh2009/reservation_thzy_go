@@ -1,11 +1,12 @@
 var width = $(window).width();
 var height = $(window).height();
 var reservations;
-var firstCategory;
-var secondCategory;
+var knowingMethods = ['与导师、辅导员交谈', '与同学交谈', '与家人交谈', '与相关行业在职人员交谈', 
+  '参加宣讲会、招聘会', '参加相关讲座和工作坊', '阅读报纸、书籍中的就业信息',
+  '浏览求职网站', '选修职业辅导课程', '到就业指导中心寻求帮助', '向院系寻求相关就业资料',
+  '参加有关的职业生涯团体', '参加过其他学生团体', '在用人单位实习或者兼职'];
 
 function viewReservations() {
-  getFeedbackCategories();
   if ($('#query_date').val() !== '') {
     queryReservations();
     return;
@@ -23,7 +24,7 @@ function viewReservations() {
 }
 
 function queryReservations() {
-  $.getJSON('/admin/reservation/view/daily', {
+  $.getJSON('/admin/reservation/view/monthly', {
     from_date: $('#query_date').val()
   }, function(json, textStatus) {
     if (json.state === 'SUCCESS') {
@@ -37,12 +38,38 @@ function queryReservations() {
   });
 }
 
-function exportTodayReservations() {
-  $.getJSON('/admin/reservation/export/today', function(json, textStatus) {
-    if (json.state === 'SUCCESS') {
-      window.open(json.url);
-    } else {
-      alert(json.message);
+// function exportTodayReservations() {
+//   $.getJSON('/admin/reservation/export/today', function(json, textStatus) {
+//     if (json.state === 'SUCCESS') {
+//       window.open(json.url);
+//     } else {
+//       alert(json.message);
+//     }
+//   });
+// }
+
+function exportReservations() {
+  var reservationIds = [];
+  for (var i = 0; i < reservations.length; ++i) {
+    if ($("#cell_checkbox_" + i)[0].checked) {
+      reservationIds.push(reservations[i].reservation_id);
+    }
+  }
+  var payload = {
+    reservation_ids: reservationIds,
+  };
+  $.ajax({
+    type: "POST",
+    url: "/admin/reservation/export",
+    data: payload,
+    traditional: true,
+    dataType: "json",
+    success: function(data) {
+      if (data.state === "SUCCESS") {
+        window.open(data.url);
+      } else {
+        alert(data.message);
+      }
     }
   });
 }
@@ -52,18 +79,9 @@ function queryStudent() {
     student_username: $('#query_student').val()
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      showStudent(data.student_info, data.reservations);
+      showStudent(data.student_info);
     } else {
       alert(data.message);
-    }
-  });
-}
-
-function getFeedbackCategories() {
-  $.getJSON('/category/feedback', function(json, textStatus) {
-    if (json.state === 'SUCCESS') {
-      firstCategory = json.first_category;
-      secondCategory = json.second_category;
     }
   });
 }
@@ -508,380 +526,88 @@ function cancelReservationsConfirm() {
   });
 }
 
-function getFeedback(index) {
-  $.post('/admin/reservation/feedback/get', {
-    reservation_id: reservations[index].reservation_id,
-    source_id: reservations[index].source_id,
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      showFeedback(index, data.feedback);
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function showFeedback(index, feedback) {
-  $('body').append('\
-    <div class="pop_window" id="feedback_table_' + index + '" style="text-align: left; width: 50%">\
-      咨询师反馈表<br>\
-      评估分类：<br>\
-      <select id="category_first_' + index + '" onchange="showSecondCategory(' + index + ')"><option value="">请选择</option></select><br>\
-      <select id="category_second_' + index + '"></select><br>\
-      出席人员：<br>\
-      <input id="participant_student_' + index + '" type="checkbox">学生</input><input id="participant_parents_' + index + '" type="checkbox">家长</input>\
-      <input id="participant_teacher_' + index + '" type="checkbox">教师</input><input id="participant_instructor_' + index + '" type="checkbox">辅导员</input>\
-      <input id="participant_other_' + index + '" type="checkbox">其他</input><br>\
-      问题评估：<br>\
-      <textarea id="problem_' + index + '" style="width: 100%; height:80px"></textarea><br>\
-      咨询记录：<br>\
-      <textarea id="record_' + index + '" style="width: 100%; height:80px"></textarea><br>\
-      是否危机个案：<select id="crisis_level_'+ index + '"><option value="0">否</option><option value="1">是</option></select><br>\
-      <div id="key_case_' + index + '" style="display: none">\
-        <b>重点个案：</b>\
-        <input id="key_case_' + index + '_0" type="checkbox">通报院系</input>\
-        <input id="key_case_' + index + '_1" type="checkbox">联席会议</input>\
-        <input id="key_case_' + index + '_2" type="checkbox">服药</input>\
-        <input id="key_case_' + index + '_3" type="checkbox">自杀未遂</input>\
-        <input id="key_case_' + index + '_4" type="checkbox">家长陪读</input>\
-        <br>\
-        <b>医疗诊断：</b>\
-        <input id="medical_diagnosis_' + index + '_0" type="checkbox">精神分裂诊断</input>\
-        <input id="medical_diagnosis_' + index + '_1" type="checkbox">双相诊断</input>\
-        <input id="medical_diagnosis_' + index + '_2" type="checkbox">抑郁症诊断</input>\
-        <input id="medical_diagnosis_' + index + '_3" type="checkbox">强迫症诊断</input>\
-        <br>　　　　　\
-        <input id="medical_diagnosis_' + index + '_4" type="checkbox">进食障碍诊断</input>\
-        <input id="medical_diagnosis_' + index + '_5" type="checkbox">失眠诊断</input>\
-        <input id="medical_diagnosis_' + index + '_6" type="checkbox">其他精神症状诊断</input>\
-        <input id="medical_diagnosis_' + index + '_7" type="checkbox">躯体疾病诊断</input>\
-      </div>\
-      <button type="button" onclick="submitFeedback(' + index + ');">提交</button>\
-      <button type="button" onclick="$(\'#feedback_table_' + index + '\').remove();">取消</button>\
-    </div>\
-  ');
-  $(function() {
-    showFirstCategory(index);
-    if (feedback.category.length > 0) {
-      $('#category_first_' + index).val(feedback.category.charAt(0));
-      $('#category_first_' + index).change();
-      $('#category_second_' + index).val(feedback.category);
-    }
-    if (feedback.participants.length > 0) {
-      $('#participant_student_' + index).first().attr('checked', feedback.participants[0] > 0);
-      $('#participant_parents_' + index).first().attr('checked', feedback.participants[1] > 0);
-      $('#participant_teacher_' + index).first().attr('checked', feedback.participants[2] > 0);
-      $('#participant_instructor_' + index).first().attr('checked', feedback.participants[3] > 0);
-      $('#participant_other_' + index).first().attr('checked', feedback.participants[4] > 0);
-    }
-    var i = 1;
-    for (i = 0; i < 5; i++) {
-      $('#key_case_' + index + '_' + i).first().attr('checked', feedback.key_case[i] > 0);
-    }
-    for (i = 0; i < 8; i++) {
-      $('#medical_diagnosis_' + index + '_' + i).first().attr('checked', feedback.medical_diagnosis[i] > 0);
-    }
-    $('#problem_' + index).val(feedback.problem);
-    $('#record_' + index).val(feedback.record);
-    $('#crisis_level_' + index).change(function() {
-      if ($('#crisis_level_' + index).val() === "0") {
-        $('#key_case_' + index).hide();
-      } else {
-        $('#key_case_' + index).show();
-      }
-    });
-    $('#crisis_level_' + index).val(feedback.crisis_level);
-    $('#crisis_level_' + index).change();
-    optimize('#feedback_table_' + index);
-  });
-}
-
-function showFirstCategory(index) {
-  for (var name in firstCategory) {
-    if (firstCategory.hasOwnProperty(name)) {
-      $('#category_first_' + index).append($("<option>", {
-        value: name,
-        text: firstCategory[name],
-      }));
-    }
-  }
-}
-
-function showSecondCategory(index) {
-  var first = $('#category_first_' + index).val();
-  $('#category_second_' + index).find("option").remove().end().append('<option value="">请选择</option>').val('');
-  if ($('#category_first_' + index).selectedIndex === 0) {
-    return;
-  }
-  if (secondCategory.hasOwnProperty(first)) {
-    for (var name in secondCategory[first]) {
-      if (secondCategory[first].hasOwnProperty(name)) {
-        var option = new Option(name, secondCategory[first][name]);
-        $('#category_second_' + index).append($("<option>", {
-          value: name,
-          text: secondCategory[first][name],
-        }));
-      }
-    }
-  }
-}
-
-function submitFeedback(index) {
-  var participants = [];
-  participants.push($('#participant_student_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_parents_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_teacher_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_instructor_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_other_' + index).first().is(':checked') ? 1 : 0);
-  var i = 1;
-  var keyCase = [];
-  for (i = 0; i < 5; i++) {
-    keyCase.push($('#key_case_' + index + '_' + i).first().is(':checked') ? 1 : 0);
-  }
-  var medicalDiagnosis = [];
-  for (i = 0; i < 8; i++) {
-    medicalDiagnosis.push($('#medical_diagnosis_' + index + '_' + i).first().is(':checked') ? 1 : 0);
-  }
-  var payload = {
-    reservation_id: reservations[index].reservation_id,
-    category: $('#category_second_' + index).val(),
-    participants: participants,
-    problem: $('#problem_' + index).val(),
-    record: $('#record_' + index).val(),
-    crisis_level: $('#crisis_level_' + index).val(),
-    key_case: keyCase,
-    medical_diagnosis: medicalDiagnosis
-  };
-  $.ajax({
-    url: '/admin/reservation/feedback/submit',
-    type: 'POST',
-    dataType: 'json',
-    data: payload,
-    traditional: true,
-  })
-  .done(function(data) {
-    if (data.state === 'SUCCESS') {
-      successFeedback(index);
-      viewReservations();
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function successFeedback(index) {
-  $('#feedback_table_' + index).remove();
-  $('body').append('\
-    <div id="pop_success_feedback" class="pop_window" style="width: 50%;">\
-      您已成功提交反馈！<br>\
-      <button type="button" onclick="$(\'#pop_success_feedback\').remove();">确定</button>\
-    </div>\
-  ');
-  optimize('#pop_success_feedback');
-}
-
-function setStudent(index) {
-  $('body').append('\
-    <div id="pop_set_student" class="pop_window" style="width: 50%;">\
-      请输入您要制定的学生学号（必须为已注册学生）：<br>\
-      <input id="student_username_' + index + '"/><br>\
-      <button type="button" onclick="setStudentConfirm(' + index + ');">确认</button>\
-      <button type="button" style="margin-left:20px" onclick="$(\'#pop_set_student\').remove();">取消</button>\
-    </div>\
-  ');
-  optimize('#pop_set_student');
-}
-
-function setStudentConfirm(index) {
-  $.post('/admin/reservation/student/set', {
-    reservation_id: reservations[index].reservation_id,
-    source_id: reservations[index].source_id,
-    start_time: reservations[index].start_time,
-    student_username: $('#student_username_' + index).val(),
-  }, function(data, textStatus, xhr) {
-    if (data.state == 'SUCCESS') {
-      successSetStudent();
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function successSetStudent() {
-  $('#pop_set_student').remove();
-  $('body').append('\
-    <div id="pop_success_set_student" class="pop_window" style="width: 50%;">\
-      成功指定学生！<br>\
-      <button type="button" onclick="$(\'#pop_success_set_student\').remove();viewReservations();">确定</button>\
-    </div>\
-  ');
-  optimize('#pop_success_set_student');
-}
-
 function getStudent(index) {
-  $.post('/admin/student/get', {
-    student_id: reservations[index].student_id
+  $.post('/admin/reservation/student/get', {
+    reservation_id: reservations[index].reservation_id
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      showStudent(data.student_info, data.reservations);
+      showStudent(data.student_info, data.reservation_info, data.student_feedback);
     } else {
       alert(data.message);
     }
   });
 }
 
-function showStudent(student, reservations) {
-  console.log(reservations);
+function showStudent(student, reservation, feedback) {
+  console.log(student);
   $('body').append('\
-    <div id="pop_show_student_' + student.student_id + '" class="pop_window" style="text-align: left; height: 70%; overflow:auto;">\
+    <div id="pop_show_student_' + student.id + '" class="pop_window" style="text-align: left; height: 70%; overflow:auto;">\
       <div style="width: 60%; float: left;">\
-        学号：' + student.student_username + '<br>\
-        姓名：' + student.student_fullname + '<br>\
-        性别：' + student.student_gender + '<br>\
-        出生日期：' + student.student_birthday + '<br>\
-        系别：' + student.student_school + '<br>\
-        年级：' + student.student_grade + '<br>\
-        现住址：' + student.student_current_address + '<br>\
-        家庭住址：' + student.student_family_address + '<br>\
-        联系电话：' + student.student_mobile + '<br>\
-        Email：' + student.student_email + '<br>\
-        咨询经历：' + (student.student_experience_time ? '时间：' + student.student_experience_time + ' 地点：' + student.student_experience_location + ' 咨询师：' + student.student_experience_teacher : '无') + '<br>\
-        父亲年龄：' + student.student_father_age + ' 职业：' + student.student_father_job + ' 学历：' + student.student_father_edu + '<br>\
-        母亲年龄：' + student.student_mother_age + ' 职业：' + student.student_mother_job + ' 学历：' + student.student_mother_edu + '<br>\
-        父母婚姻状况：' + student.student_parent_marriage + '<br>\
-        近三个月里发生的有重大意义的事：' + student.student_significant + '<br>\
-        需要接受帮助的主要问题：' + student.student_problem + '<br>\
-        <br>\
-        是否危机个案：<select id="crisis_level_'+ student.student_id + '"><option value="0">否</option><option value="1">是</option></select>\
-        <button type="button" onclick="updateCrisisLevel(\'' + student.student_id + '\');">更新</button>\
-        <span id="crisis_level_tip_' + student.student_id + '" style="color: red;"></span><br>\
-        <div id="key_case_' + student.student_id + '" style="display: none">\
-          <b>重点个案：</b>\
-          <input id="key_case_' + student.student_id + '_0" type="checkbox">通报院系</input>\
-          <input id="key_case_' + student.student_id + '_1" type="checkbox">联席会议</input>\
-          <input id="key_case_' + student.student_id + '_2" type="checkbox">服药</input>\
-          <input id="key_case_' + student.student_id + '_3" type="checkbox">自杀未遂</input>\
-          <input id="key_case_' + student.student_id + '_4" type="checkbox">家长陪读</input>\
-          <br>\
-          <b>医疗诊断：</b>\
-          <input id="medical_diagnosis_' + student.student_id + '_0" type="checkbox">精神分裂诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_1" type="checkbox">双相诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_2" type="checkbox">抑郁症诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_3" type="checkbox">强迫症诊断</input>\
-          <br>　　　　　\
-          <input id="medical_diagnosis_' + student.student_id + '_4" type="checkbox">进食障碍诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_5" type="checkbox">失眠诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_6" type="checkbox">其他精神症状诊断</input>\
-          <input id="medical_diagnosis_' + student.student_id + '_7" type="checkbox">躯体疾病诊断</input>\
-        </div>\
-        档案分类：<input id="archive_category_' + student.student_id + '" type="text" value="' + student.student_archive_category + '" style="width: 100px"/>\
-        档案编号：<input id="archive_number_' + student.student_id + '" type="text" value="' + student.student_archive_number + '" style="width: 50px"/>\
-        <button type="button" onclick="updateArchiveNumber(\'' + student.student_id + '\');">更新</button>\
-        <span id="archive_number_tip_' + student.student_id + '" style="color: red;"></span><br>\
-        已绑定的咨询师：<span id="binded_teacher_username_' + student.student_id + '">' + student.student_binded_teacher_username + '</span>&nbsp;\
-          <span id="binded_teacher_fullname_' + student.student_id + '">' + student.student_binded_teacher_fullname + '</span>\
-          <button type="button" onclick="unbindStudent(\'' + student.student_id + '\');">解绑</button><br>\
-        请输入匹配咨询师工号：<input id="teacher_username_' + student.student_id + '" type="text"/>\
-        <button type="button" onclick="bindStudent(\'' + student.student_id + '\');">绑定</button><br>\
+        学号：' + student.username + '<br>\
+        姓名：' + student.fullname + '<br>\
+        性别：' + student.gender + '<br>\
+        出生年月：' + student.birthday + '<br>\
+        民族：' + student.ethnic + '<br>\
+        入学年份：' + student.enter_year + '<br>\
+        生源地：' + student.source_place + '<br>\
+        院系：' + student.college + '<br>\
+        原就读学校（本科/硕士）：' + student.original_school + '<br>\
+        原专业（如有转换）：' + student.original_major + '<br>\
+        电子邮件：' + student.email + '<br>\
+        联系电话：' + student.mobile + '<br>\
+        婚姻状况：' + student.marriage + '<br>\
+        健康状况：' + student.health + '<br>\
+        父亲职业：' + student.father_job + '<br>\
+        母亲职业：' + student.mother_job + '<br>\
+        是否有兄弟姐妹：' + student.has_brother_or_sister + ' 年龄：' + student.brother_age + ' 职业：' + student.brother_job + '<br>\
+        以前是否接受过职业咨询：' + student.has_career_consulting + '<br>\
+        以前是否接受过心理咨询：' + student.has_mental_consulting + '<br>\
+        目前是否在接受其他咨询：' + student.other_consulting_now + '<br>\
+        是否有工作经验：<span id="working_experience_' + student.id + '"></span><br>\
+        我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用以下哪些方法：<br>\
+        <span id="knowing_methods_' + student.id + '"></span><br><br>\
+        紧急联系人：' + student.emergency_person + ' 电话：' + student.emergency_mobile + '<br>\
+        <div id="student_expectation_' + student.id + '"></div>\
+        <div id="student_feedback_' + student.id + '"></div>\
         <div style="margin: 10px 0">\
-          <button type="button" onclick="exportStudent(\'' + student.student_id + '\');">导出</button>\
-          <button type="button" onclick="$(\'#pop_show_student_' + student.student_id + '\').remove();">关闭</button>\
-        </div>\
-        <div id="student_reservations_' + student.student_id + '" style="width: 600px">\
+          <button type="button" onclick="exportStudent(\'' + student.id + '\');">导出</button>\
+          <button type="button" onclick="$(\'#pop_show_student_' + student.id + '\').remove();">关闭</button>\
         </div>\
       </div>\
       <div style="width: 35%; float: right; border: 2px solid red; padding: 2px;">\
         <p style="margin-top: 0; background-color: red">账户相关，谨慎操作</p>\
-        新密码：<input id="password_' + student.student_id + '" type="password"/><br>\
-        确认密码：<input id="password_check_' + student.student_id + '" type="password"/><br>\
-        <button type="button" onclick="resetStudentPassword(\'' + student.student_id + '\');">重置密码</button>\
+        新密码：<input id="password_' + student.id + '" type="password"/><br>\
+        确认密码：<input id="password_check_' + student.id + '" type="password"/><br>\
+        <button type="button" onclick="resetStudentPassword(\'' + student.id + '\');">重置密码</button>\
         <p>删除账户</p>\
-        <button type="button" onclick="deleteStudentAccount(\'' + student.student_id + '\');" class="btn btn-danger">删除账户</button>\
+        <button type="button" onclick="deleteStudentAccount(\'' + student.id + '\');" class="btn btn-danger">删除账户</button>\
       </div>\
     </div>\
   ');
-  for (var i = 0; i < reservations.length; i++) {
-    $('#student_reservations_' + student.student_id).append('\
-      <div class="has_children" style="background: ' + (reservations[i].status === 'FEEDBACK' ? '#555' : '#F00') + '">\
-        <span>' + reservations[i].start_time + ' 至 ' + reservations[i].end_time + '  ' + reservations[i].teacher_fullname + '</span>\
-        <p class="children">学生反馈：' + reservations[i].student_feedback.scores + '</p>\
-        <p class="children">评估分类：' + reservations[i].teacher_feedback.category + '</p>\
-        <p class="children">出席人员：' + reservations[i].teacher_feedback.participants + '</p>\
-        <p class="children">问题评估：' + reservations[i].teacher_feedback.problem + '</p>\
-        <p class="children">咨询记录：' + reservations[i].teacher_feedback.record + '</p>\
-      </div>\
-    ');
-  }
   $(function() {
-    $('.has_children').click(function() {
-      $(this).addClass('highlight').children('p').show().end()
-          .siblings().removeClass('highlight').children('p').hide();
-    });
-    var i = 1;
-    for (i = 0; i < 5; i++) {
-      $('#key_case_' + student.student_id + '_' + i).first().attr('checked', student.student_key_case[i] > 0);
+    if (student.working_experience === '1') {
+      $('#working_experience_' + student.id).text('有全职工作经验，工作年限：' + student.working_period);
+    } else if (student.working_experience === '2') {
+      $('#working_experience_' + student.id).text('有兼职工作经验或做过义工，累积工作时间：' + student.working_period);
+    } else if (student.working_experience === '3') {
+      $('#working_experience_' + student.id).text('没有任何工作经验');
     }
-    for (i = 0; i < 8; i++) {
-      $('#medical_diagnosis_' + student.student_id + '_' + i).first().attr('checked', student.student_medical_diagnosis[i] > 0);
+    for (var i = 0; i < student.knowing_methods.length; i++) {
+      $('#knowing_methods_' + student.id).text($('#knowing_methods_' + student.id).text() + " " + knowingMethods[student.knowing_methods[i] - 1]);
     }
-    $('#crisis_level_' + student.student_id).change(function() {
-      if ($('#crisis_level_' + student.student_id).val() === "0") {
-        $('#key_case_' + student.student_id).hide();
-      } else {
-        $('#key_case_' + student.student_id).show();
-      }
-    });
-    $('#crisis_level_' + student.student_id).val(student.student_crisis_level);
-    $('#crisis_level_' + student.student_id).change();
-  });
-  optimize('#pop_show_student_' + student.student_id);
-}
+    if (reservation) {
+      $('#student_expectation_' + student.id).append('<br>\
+        此次来最主要想解决的问题是：<br><u>' + reservation.problem + '</u><br>\
+        你期望职业生涯咨询帮助达到什么样的效果？<br><u>' + reservation.expectation + '</u><br>\
+        期望的咨询次数约为：' + reservation.expected_time + '<br>\
+        填写日期：' + reservation.time + '<br>\
+      ');
+    }
+    if (feedback) {
 
-function updateCrisisLevel(studentId) {
-  var i = 1;
-  var keyCase = [];
-  for (i = 0; i < 5; i++) {
-    keyCase.push($('#key_case_' + studentId + '_' + i).first().is(':checked') ? 1 : 0);
-  }
-  var medicalDiagnosis = [];
-  for (i = 0; i < 8; i++) {
-    medicalDiagnosis.push($('#medical_diagnosis_' + studentId + '_' + i).first().is(':checked') ? 1 : 0);
-  }
-  var payload = {
-    student_id: studentId,
-    crisis_level: $('#crisis_level_' + studentId).val(),
-    key_case: keyCase,
-    medical_diagnosis: medicalDiagnosis
-  }
-  $.ajax({
-    url: '/admin/student/crisis/update',
-    type: 'POST',
-    dataType: 'json',
-    data: payload,
-    traditional: true,
-  })
-  .done(function(data) {
-    if (data.state === 'SUCCESS') {
-      $('#crisis_level_tip_' + studentId).text('更新成功！');
-      viewReservations();
-    } else {
-      alert(data.message);
     }
   });
-}
-
-function updateArchiveNumber(studentId) {
-  $.post('/admin/student/archive/update', {
-    student_id: studentId,
-    archive_category: $('#archive_category_' + studentId).val(),
-    archive_number: $('#archive_number_' + studentId).val(),
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      $('#archive_number_tip_' + studentId).text('更新成功！');
-    } else {
-      alert(data.message);
-    }
-  });
+  optimize('#pop_show_student_' + student.id);
 }
 
 function resetStudentPassword(studentId) {
@@ -983,106 +709,10 @@ function exportStudent(studentId) {
   });
 }
 
-function unbindStudent(studentId) {
-  $.post('/admin/student/unbind', {
-    student_id: studentId,
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      $('#binded_teacher_username_' + studentId).text(data.student_info.student_binded_teacher_username);
-      $('#binded_teacher_fullname_' + studentId).text(data.student_info.student_binded_teacher_fullname);
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function bindStudent(studentId) {
-  $.post('/admin/student/bind', {
-    student_id: studentId,
-    teacher_username: $('#teacher_username_' + studentId).val(),
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      $('#binded_teacher_username_' + studentId).text(data.student_info.student_binded_teacher_username);
-      $('#binded_teacher_fullname_' + studentId).text(data.student_info.student_binded_teacher_fullname);
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function getWorkload() {
-  $.post('/admin/teacher/workload', {
-    from_date: $('#workload_from').val(),
-    to_date: $('#workload_to').val(),
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      showWorkload(data.workload);
-    } else {
-      alert(data.message);
-    }
-  });
-}
-
-function showWorkload(workload) {
-  $('body').append('\
-    <div id="pop_show_workload" class="pop_window" style="text-align: left; width: 50%; height: 70%; overflow: auto;">\
-      咨询师工作量统计\
-      <div id="teacher_workload" style="width: 600px; margin-top: 10px;">\
-        <div class="table_col" id="col_workload_username">\
-          <div class="table_head table_cell">咨询师工号</div>\
-        </div>\
-        <div class="table_col" id="col_workload_fullname">\
-          <div class="table_head table_cell">咨询师姓名</div>\
-        </div>\
-        <div class="table_col" id="col_workload_student">\
-          <div class="table_head table_cell">咨询人数</div>\
-        </div>\
-        <div class="table_col" id="col_workload_reservation">\
-          <div class="table_head table_cell">咨询人次</div>\
-        </div>\
-        <div class="clearfix"></div>\
-      </div>\
-      <div style="margin: 10px 0">\
-        <button type="button" onclick="$(\'#pop_show_workload\').remove();">关闭</button>\
-      </div>\
-    </div>\
-  ');
-  $('#col_workload_username').width(100);
-  $('#col_workload_fullname').width(100);
-  $('#col_workload_student').width(80);
-  $('#col_workload_reservation').width(80);
-  for (var i in workload) {
-    if (workload.hasOwnProperty(i)) {
-      $('#col_workload_username').append('<div class="table_cell" id="cell_workload_username_'
-        + i + '">' + workload[i].teacher_username + '</div>');
-      $('#col_workload_fullname').append('<div class="table_cell" id="cell_workload_fullname_'
-        + i + '">' + workload[i].teacher_fullname + '</div>');
-      $('#col_workload_student').append('<div class="table_cell" id="cell_workload_student_'
-        + i + '">' + Object.size(workload[i].students) + '</div>');
-      $('#col_workload_reservation').append('<div class="table_cell" id="cell_workload_reservation_'
-        + i + '">' + Object.size(workload[i].reservations) + '</div>');
-    }
-  }
-  optimize('#pop_show_workload');
-}
-
 Object.size = function(obj) {
   var size = 0, key;
   for (key in obj) {
     if (obj.hasOwnProperty(key)) size++;
   }
   return size;
-}
-
-function exportReportMonthly() {
-  $.post('/admin/reservation/export/report/monthly', {
-    monthly_date: $('#monthly_report_date').val(),
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      window.open(data.report);
-      window.open(data.key_case);
-    } else {
-      alert(data.message);
-    }
-  });
 }

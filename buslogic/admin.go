@@ -195,29 +195,31 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, userId 
 	return canceled, nil
 }
 
-// 管理员查看学生信息
-func (al *AdminLogic) GetStudentInfoByAdmin(studentId string,
-	userId string, userType models.UserType) (*models.Student, []*models.Reservation, error) {
+// 管理员查看学生的预约信息
+func (al *AdminLogic) GetReservatingStudentInfoByAdmin(reservationId string,
+	userId string, userType models.UserType) (*models.Student, *models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
 		return nil, nil, errors.New("权限不足")
-	} else if len(studentId) == 0 {
-		return nil, nil, errors.New("咨询未被预约，不能查看")
+	} else if len(reservationId) == 0 {
+		return nil, nil, errors.New("咨询已下架")
 	}
 	admin, err := models.GetAdminById(userId)
 	if err != nil || admin.UserType != models.ADMIN {
 		return nil, nil, errors.New("管理员账户出错,请联系技术支持")
 	}
-	student, err := models.GetStudentById(studentId)
-	if err != nil || student.UserType != models.STUDENT {
-		return nil, nil, errors.New("学生未注册")
+	reservation, err := models.GetReservationById(reservationId)
+	if err != nil || reservation.Status == models.DELETED {
+		return nil, nil, errors.New("咨询已下架")
+	} else if reservation.Status == models.AVAILABLE {
+		return nil, nil, errors.New("咨询未被预约，无法查看")
 	}
-	reservations, err := models.GetReservationsByStudentId(student.Id.Hex())
+	student, err := models.GetStudentById(reservation.StudentId)
 	if err != nil {
-		return nil, nil, errors.New("获取数据失败")
+		return nil, nil, errors.New("咨询未被预约，无法查看")
 	}
-	return student, reservations, nil
+	return student, reservation, nil
 }
 
 // 管理员重置学生密码
@@ -302,27 +304,23 @@ func (al *AdminLogic) ExportStudentByAdmin(reservationId string, userId string, 
 
 // 管理员查询学生信息
 func (al *AdminLogic) QueryStudentInfoByAdmin(studentUsername string,
-	userId string, userType models.UserType) (*models.Student, []*models.Reservation, error) {
+	userId string, userType models.UserType) (*models.Student, error) {
 	if len(userId) == 0 {
-		return nil, nil, errors.New("请先登录")
+		return nil, errors.New("请先登录")
 	} else if userType != models.ADMIN {
-		return nil, nil, errors.New("权限不足")
+		return nil, errors.New("权限不足")
 	} else if len(studentUsername) == 0 {
-		return nil, nil, errors.New("学号为空")
+		return nil, errors.New("学号为空")
 	}
 	admin, err := models.GetAdminById(userId)
 	if err != nil || admin.UserType != models.ADMIN {
-		return nil, nil, errors.New("管理员账户出错,请联系技术支持")
+		return nil, errors.New("管理员账户出错,请联系技术支持")
 	}
 	student, err := models.GetStudentByUsername(studentUsername)
 	if err != nil || student.UserType != models.STUDENT {
-		return nil, nil, errors.New("学生未注册")
+		return nil, errors.New("学生未注册")
 	}
-	reservations, err := models.GetReservationsByStudentId(student.Id.Hex())
-	if err != nil {
-		return nil, nil, errors.New("获取数据失败")
-	}
-	return student, reservations, nil
+	return student, nil
 }
 
 // 管理员导出咨询

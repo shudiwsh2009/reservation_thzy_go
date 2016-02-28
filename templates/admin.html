@@ -20,25 +20,17 @@
 		</div>
 		<button onclick="removeReservations();">批量删除</button>
 		<button onclick="cancelReservations();">取消预约</button>
-		<button onclick="location.href='/reservation/admin/timetable'" style="margin-left: 50px">编辑预设咨询</button>
-		<button onclick="logout();">退出登录</button>
+		<button onclick="exportReservations();">导出选定预约</button>
+		<input type="text" id="query_date" style="width:80px"/>
+		<button onclick="queryReservations();">查询</button>
+		<button onclick="logout();" style="margin-left: 50px;">退出登录</button>
 		<div style="padding-top:10px">
-			<input type="text" id="query_date" style="width:80px"/>
-			<button onclick="queryReservations();">查询</button>
-			<button style="margin-left:50px" onclick="exportTodayReservations();">导出当天时间表</button>
-			<input type="text" id="monthly_report_date" style="width:80px;margin-left:50px">
-			<button onclick="exportReportMonthly();">导出月报</button>
+			<!-- <button style="margin-left:50px" onclick="exportTodayReservations();">导出当天时间表</button> -->
 		</div>
 		<div style="padding-top:10px">
 			请输入学生学号
 			<input type="text" id="query_student" style="width: 100px"/>
 			<button onclick="queryStudent();">查看学生信息</button>
-		</div>
-		<div style="padding-top: 10px">
-			咨询师工作量　
-			起<input type="text" id="workload_from" style="width: 100px"/>
-			止<input type="text" id="workload_to" style="width: 100px"/>
-			<button onclick="getWorkload();">统计</button>
 		</div>
 		<div id="page_maintable">
 			
@@ -52,38 +44,6 @@
 		$(function() {
 			viewReservations();
 			$('#query_date').datepicker({
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				showButtonPanel: true,
-				dateFormat: 'yy-mm-dd',
-				showWeek: true,
-				firstDay: 1
-			});
-			$('#export_date').datepicker({
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				showButtonPanel: true,
-				dateFormat: 'yy-mm-dd',
-				showWeek: true,
-				firstDay: 1
-			});
-			$('#monthly_report_date').datepicker({
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				showButtonPanel: true,
-				dateFormat: 'yy-mm-dd',
-				showWeek: true,
-				firstDay: 1
-			});
-			$('#workload_from').datepicker({
-				showOtherMonths: true,
-				selectOtherMonths: true,
-				showButtonPanel: true,
-				dateFormat: 'yy-mm-dd',
-				showWeek: true,
-				firstDay: 1
-			});
-			$('#workload_to').datepicker({
 				showOtherMonths: true,
 				selectOtherMonths: true,
 				showButtonPanel: true,
