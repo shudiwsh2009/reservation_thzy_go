@@ -20,7 +20,7 @@ function viewReservations() {
 }
 
 function queryStudent() {
-  $.post('/admin/student/query', {
+  $.post('/teacher/student/query', {
     student_username: $('#query_student').val()
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
@@ -433,93 +433,80 @@ function cancelReservationsConfirm() {
 }
 
 function getStudent(index) {
-  $.post('/teacher/student/get', {
-    student_id: reservations[index].student_id
+  $.post('/teacher/reservation/student/get', {
+    reservation_id: reservations[index].reservation_id
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      showStudent(data.student_info, data.reservations);
+      showStudent(data.student_info, data.reservation_info, data.student_feedback);
     } else {
       alert(data.message);
     }
   });
 }
 
-function showStudent(student, reservations) {
+function showStudent(student, reservation, feedback) {
   $('body').append('\
-    <div id="pop_show_student_' + student.student_id + '" class="pop_window" style="text-align: left; width: 90%; height: 60%; overflow: auto">\
-      学号：' + student.student_username + '<br>\
-      姓名：' + student.student_fullname + '<br>\
-      性别：' + student.student_gender + '<br>\
-      出生日期：' + student.student_birthday + '<br>\
-      系别：' + student.student_school + '<br>\
-      年级：' + student.student_grade + '<br>\
-      现住址：' + student.student_current_address + '<br>\
-      家庭住址：' + student.student_family_address + '<br>\
-      联系电话：' + student.student_mobile + '<br>\
-      Email：' + student.student_email + '<br>\
-      咨询经历：' + (student.student_experience_time ? '时间：' + student.student_experience_time + ' 地点：' + student.student_experience_location + ' 咨询师：' + student.student_experience_teacher : '无') + '<br>\
-      父亲年龄：' + student.student_father_age + ' 职业：' + student.student_father_job + ' 学历：' + student.student_father_edu + '<br>\
-      母亲年龄：' + student.student_mother_age + ' 职业：' + student.student_mother_job + ' 学历：' + student.student_mother_edu + '<br>\
-      父母婚姻状况：' + student.student_parent_marriage + '<br>\
-      近三个月里发生的有重大意义的事：' + student.student_significant + '<br>\
-      需要接受帮助的主要问题：' + student.student_problem + '<br>\
-      档案分类：' + student.student_archive_category + ' 档案编号：' + student.student_archive_number + '<br>\
-      是否危机个案：<span id="crisis_level_'+ student.student_id + '"></span><br>\
-      <div id="key_case_' + student.student_id + '" style="display: none">\
-        <b>重点个案：</b>\
-        <input id="key_case_' + student.student_id + '_0" type="checkbox">通报院系</input>\
-        <input id="key_case_' + student.student_id + '_1" type="checkbox">联席会议</input>\
-        <input id="key_case_' + student.student_id + '_2" type="checkbox">服药</input>\
-        <input id="key_case_' + student.student_id + '_3" type="checkbox">自杀未遂</input>\
-        <input id="key_case_' + student.student_id + '_4" type="checkbox">家长陪读</input>\
-        <br>\
-        <b>医疗诊断：</b>\
-        <input id="medical_diagnosis_' + student.student_id + '_0" type="checkbox">精神分裂诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_1" type="checkbox">双相诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_2" type="checkbox">抑郁症诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_3" type="checkbox">强迫症诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_4" type="checkbox">进食障碍诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_5" type="checkbox">失眠诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_6" type="checkbox">其他精神症状诊断</input>\
-        <input id="medical_diagnosis_' + student.student_id + '_7" type="checkbox">躯体疾病诊断</input>\
-      </div>\
-      <br>\
-      已绑定的咨询师：<span id="binded_teacher_username">' + student.student_binded_teacher_username + '</span>&nbsp;\
-        <span id="binded_teacher_fullname">' + student.student_binded_teacher_fullname + '</span><br>\
-      <br>\
-      <button type="button" onclick="$(\'#pop_show_student_' + student.student_id + '\').remove();">关闭</button>\
-      <div id="student_reservations_' + student.student_id + '" style="width: 100%">\
+    <div id="pop_show_student_' + student.id + '" class="pop_window" style="text-align: left; height: 70%; overflow:auto;">\
+      学号：' + student.username + '<br>\
+      姓名：' + student.fullname + '<br>\
+      性别：' + student.gender + '<br>\
+      出生年月：' + student.birthday + '<br>\
+      民族：' + student.ethnic + '<br>\
+      入学年份：' + student.enter_year + '<br>\
+      生源地：' + student.source_place + '<br>\
+      院系：' + student.college + '<br>\
+      原就读学校（本科/硕士）：' + student.original_school + '<br>\
+      原专业（如有转换）：' + student.original_major + '<br>\
+      电子邮件：' + student.email + '<br>\
+      联系电话：' + student.mobile + '<br>\
+      婚姻状况：' + student.marriage + '<br>\
+      健康状况：' + student.health + '<br>\
+      父亲职业：' + student.father_job + '<br>\
+      母亲职业：' + student.mother_job + '<br>\
+      是否有兄弟姐妹：' + student.has_brother_or_sister + ' 年龄：' + student.brother_age + ' 职业：' + student.brother_job + '<br>\
+      以前是否接受过职业咨询：' + student.has_career_consulting + '<br>\
+      以前是否接受过心理咨询：' + student.has_mental_consulting + '<br>\
+      目前是否在接受其他咨询：' + student.other_consulting_now + '<br>\
+      是否有工作经验：<span id="working_experience_' + student.id + '"></span><br>\
+      我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用以下哪些方法：<br>\
+      <span id="knowing_methods_' + student.id + '"></span><br><br>\
+      紧急联系人：' + student.emergency_person + ' 电话：' + student.emergency_mobile + '<br>\
+      <div id="student_expectation_' + student.id + '"></div>\
+      <div id="student_feedback_' + student.id + '"></div>\
+      <div style="margin: 10px 0">\
+        <button type="button" onclick="$(\'#pop_show_student_' + student.id + '\').remove();">关闭</button>\
       </div>\
     </div>\
   ');
-  for (var i = 0; i < reservations.length; i++) {
-    $('#student_reservations_' + student.student_id).append('\
-      <div class="has_children" style="background: ' + (reservations[i].status === 'FEEDBACK' ? '#555' : '#F00') + '">\
-        <span>' + reservations[i].start_time + '  ' + reservations[i].teacher_fullname + '</span>\
-        <p class="children" style="width:100%;">学生反馈：' + reservations[i].student_feedback.scores + '</p>\
-        <p class="children" style="width:100%;">评估分类：' + reservations[i].teacher_feedback.category + '</p>\
-        <p class="children" style="width:100%;">出席人员：' + reservations[i].teacher_feedback.participants + '</p>\
-        <p class="children" style="width:100%;">问题评估：' + reservations[i].teacher_feedback.problem + '</p>\
-        <p class="children" style="width:100%;">咨询记录：' + reservations[i].teacher_feedback.record + '</p>\
-      </div>\
-    ');
-  }
   $(function() {
-    $('.has_children').click(function() {
-      $(this).addClass('highlight').children('p').show().end()
-          .siblings().removeClass('highlight').children('p').hide();
-    });
-    var i = 1;
-    for (i = 0; i < 5; i++) {
-      $('#key_case_' + student.student_id + '_' + i).first().attr('checked', student.student_key_case[i] > 0);
+    if (student.working_experience === '1') {
+      $('#working_experience_' + student.id).text('有全职工作经验，工作年限：' + student.working_period);
+    } else if (student.working_experience === '2') {
+      $('#working_experience_' + student.id).text('有兼职工作经验或做过义工，累积工作时间：' + student.working_period);
+    } else if (student.working_experience === '3') {
+      $('#working_experience_' + student.id).text('没有任何工作经验');
     }
-    for (i = 0; i < 8; i++) {
-      $('#medical_diagnosis_' + student.student_id + '_' + i).first().attr('checked', student.student_medical_diagnosis[i] > 0);
+    for (var i = 0; i < student.knowing_methods.length; i++) {
+      $('#knowing_methods_' + student.id).text($('#knowing_methods_' + student.id).text() + " " + knowingMethods[student.knowing_methods[i] - 1]);
     }
-    $('#crisis_level_' + student.student_id).text(student.student_crisis_level === 0 ? '否' : '是');
-    if (student.student_crisis_level !== 0) {
-      $('#key_case_' + student.student_id).show();
+    if (reservation) {
+      $('#student_expectation_' + student.id).append('<br>\
+        此次来最主要想解决的问题是：<br><u>' + reservation.problem + '</u><br>\
+        你期望职业生涯咨询帮助达到什么样的效果？<br><u>' + reservation.expectation + '</u><br>\
+        期望的咨询次数约为：' + reservation.expected_time + '<br>\
+        填写日期：' + reservation.time + '<br>\
+      ');
+      $('#export_' + student.id).click(function() {
+        exportReservatingStudentInfo(reservation.id);
+      });
+    } else {
+      $('#export_' + student.id).click(function() {
+        exportStudent(student.id);
+      });
+    }
+    if (feedback) {
+
     }
   });
-  optimize('#pop_show_student_' + student.student_id);
+  optimize('#pop_show_student_' + student.id);
 }

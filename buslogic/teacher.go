@@ -191,7 +191,7 @@ func (tl *TeacherLogic) GetReservatingStudentInfoByTeacher(reservationId string,
 	userId string, userType models.UserType) (*models.Student, *models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, nil, errors.New("请先登录")
-	} else if userType != models.ADMIN {
+	} else if userType != models.TEACHER {
 		return nil, nil, errors.New("权限不足")
 	} else if len(reservationId) == 0 {
 		return nil, nil, errors.New("咨询已下架")

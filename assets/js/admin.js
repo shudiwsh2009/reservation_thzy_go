@@ -533,7 +533,6 @@ function getStudent(index) {
 }
 
 function showStudent(student, reservation, feedback) {
-  console.log(student);
   $('body').append('\
     <div id="pop_show_student_' + student.id + '" class="pop_window" style="text-align: left; height: 70%; overflow:auto;">\
       <div style="width: 60%; float: left;">\
@@ -699,7 +698,6 @@ function deleteStudentAccountSuccess(studentId) {
 }
 
 function exportReservatingStudentInfo(reservationId) {
-  console.log(reservationId);
   $.post('/admin/reservation/student/export', {
     reservation_id: reservationId,
   }, function(data, textStatus, xhr) {
