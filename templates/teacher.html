@@ -9,10 +9,10 @@
 		<title>
 			学生心理发展指导中心预约系统
 		</title>
-		<link rel="stylesheet" href="/assets/css/datepicker.css" type="text/css" />
 		<link type="text/css" href="/assets/css/style.css" rel="stylesheet">
 		<script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-		<script type="text/javascript" src="/assets/js/datepicker.js"></script>
+		<script type="text/javascript" src="/assets/jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+		<link rel="stylesheet" href="/assets/jquery-ui-1.11.4.custom/jquery-ui.min.css" type="text/css">
 	</head>
 	<body background="/assets/img/bg.png" style="text-align:center;">
 		<div id="page_title">
@@ -20,6 +20,8 @@
 			咨询师管理
 		</div>
 		<div style="float:right;width:100%">
+			<button onclick="removeReservations();">批量删除</button>
+			<button onclick="cancelReservations();">取消预约</button>
 			<button onclick="logout();" style="margin:0 50px 10px 0;float:right">退出登录</button>
 		</div>
 		<div style="padding-top:10px">

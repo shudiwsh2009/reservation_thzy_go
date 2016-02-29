@@ -186,56 +186,54 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 	return canceled, nil
 }
 
-// 咨询师查看学生信息
-func (tl *TeacherLogic) GetStudentInfoByTeacher(studentId string,
-	userId string, userType models.UserType) (*models.Student, []*models.Reservation, error) {
+// 咨询师查看学生的预约信息
+func (tl *TeacherLogic) GetReservatingStudentInfoByTeacher(reservationId string,
+	userId string, userType models.UserType) (*models.Student, *models.Reservation, error) {
 	if len(userId) == 0 {
 		return nil, nil, errors.New("请先登录")
-	} else if userType != models.TEACHER {
+	} else if userType != models.ADMIN {
 		return nil, nil, errors.New("权限不足")
-	} else if len(studentId) == 0 {
-		return nil, nil, errors.New("咨询未被预约")
+	} else if len(reservationId) == 0 {
+		return nil, nil, errors.New("咨询已下架")
 	}
 	teacher, err := models.GetTeacherById(userId)
-	if err != nil {
+	if err != nil || teacher.UserType != models.TEACHER {
 		return nil, nil, errors.New("咨询师账户失效")
-	} else if teacher.UserType != models.TEACHER {
-		return nil, nil, errors.New("权限不足")
 	}
-	student, err := models.GetStudentById(studentId)
+	reservation, err := models.GetReservationById(reservationId)
+	if err != nil || reservation.Status == models.DELETED {
+		return nil, nil, errors.New("咨询已下架")
+	} else if reservation.Status == models.AVAILABLE {
+		return nil, nil, errors.New("咨询未被预约，无法查看")
+	} else if !strings.EqualFold(reservation.TeacherId, teacher.Id.Hex()) {
+		return nil, nil, errors.New("只能查看本人开设的咨询")
+	}
+	student, err := models.GetStudentById(reservation.StudentId)
 	if err != nil {
-		return nil, nil, errors.New("学生未注册")
+		return nil, nil, errors.New("咨询未被预约，无法查看")
 	}
-	reservations, err := models.GetReservationsByStudentId(student.Id.Hex())
-	if err != nil {
-		return nil, nil, errors.New("获取数据失败")
-	}
-	return student, reservations, nil
+	return student, reservation, nil
 }
 
 // 咨询师查询学生信息
 func (tl *TeacherLogic) QueryStudentInfoByTeacher(studentUsername string,
-	userId string, userType models.UserType) (*models.Student, []*models.Reservation, error) {
+	userId string, userType models.UserType) (*models.Student, error) {
 	if len(userId) == 0 {
-		return nil, nil, errors.New("请先登录")
+		return nil, errors.New("请先登录")
 	} else if userType != models.TEACHER {
-		return nil, nil, errors.New("权限不足")
+		return nil, errors.New("权限不足")
 	} else if len(studentUsername) == 0 {
-		return nil, nil, errors.New("学号为空")
+		return nil, errors.New("学号为空")
 	}
 	teacher, err := models.GetTeacherById(userId)
 	if err != nil {
-		return nil, nil, errors.New("咨询师账户失效")
+		return nil, errors.New("咨询师账户失效")
 	} else if teacher.UserType != models.TEACHER {
-		return nil, nil, errors.New("权限不足")
+		return nil, errors.New("权限不足")
 	}
 	student, err := models.GetStudentByUsername(studentUsername)
 	if err != nil || student.UserType != models.STUDENT {
-		return nil, nil, errors.New("学生未注册")
+		return nil, errors.New("学生未注册")
 	}
-	reservations, err := models.GetReservationsByStudentId(student.Id.Hex())
-	if err != nil {
-		return nil, nil, errors.New("获取数据失败")
-	}
-	return student, reservations, nil
+	return student, nil
 }

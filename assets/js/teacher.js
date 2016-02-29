@@ -2,11 +2,10 @@ var width=$(window).width();
 var height=$(window).height();
 var teacher;
 var reservations;
-var firstCategory;
-var secondCategory;
+var knowingMethods;
 
 function viewReservations() {
-  getFeedbackCategories();
+  getKnowingMethods();
   $.getJSON('/teacher/reservation/view', function(json, textStatus) {
     if (json.state === 'SUCCESS') {
       console.log(json);
@@ -20,23 +19,33 @@ function viewReservations() {
   });
 }
 
-function getFeedbackCategories() {
-  $.ajax({
-    type: 'GET',
-    async: false,
-    url: '/category/feedback',
-    dateType: 'json',
-    success: function(data) {
-      if (data.state === 'SUCCESS') {
-        firstCategory = data.first_category;
-        secondCategory = data.second_category;
-      }
+function queryStudent() {
+  $.post('/admin/student/query', {
+    student_username: $('#query_student').val()
+  }, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      showStudent(data.student_info);
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+function getKnowingMethods() {
+  $.getJSON('/user/knowing_methods', function(json, textStatus) {
+    if (json.state === 'SUCCESS') {
+      knowingMethods = json.knowing_methods;
     }
   });
 }
 
 function refreshDataTable(reservations) {
   $('#page_maintable')[0].innerHTML = '\
+    <div class="table_col" id="col_select">\
+      <div class="table_head table_cell" id="head_select">\
+        <button id="btn_select_all" name="all" onclick="selectAll();" style="padding: 0px;">全选</button>\
+      </div>\
+    </div>\
     <div class="table_col" id="col_time">\
       <div class="table_head table_cell">时间</div>\
     </div>\
@@ -56,8 +65,9 @@ function refreshDataTable(reservations) {
   ';
 
   for (var i = 0; i < reservations.length; ++i) {
-    $('#col_time').append('<div class="table_cell" id="cell_time_' + i + '" onclick="editReservation('
-      + i + ')">' + reservations[i].start_time.split(' ')[0].substr(2) + '<br>' 
+    $('#col_select').append('<div class="table_cell" id="cell_select_' + i + '">'
+      + '<input class="checkbox" type="checkbox" id="cell_checkbox_' + i + '"></div>');
+    $('#col_time').append('<div class="table_cell" id="cell_time_' + i + '" name="' + i + '">' + reservations[i].start_time.split(' ')[0].substr(2) + '<br>' 
       + reservations[i].start_time.split(' ')[1] + '-' + reservations[i].end_time.split(' ')[1] + '</div>');
     $('#col_teacher_fullname').append('<div class="table_cell" id="cell_teacher_fullname_'
       + i + '">' + reservations[i].teacher_fullname + '</div>');
@@ -82,23 +92,52 @@ function refreshDataTable(reservations) {
         + '</button></div>');
     }
   }
+  $('#col_select').append('<div class="table_cell" id="cell_select_add"><input type="checkbox"></div>');
+  $('#col_time').append('<div class="table_cell" id="cell_time_add">点击新增</div>');
+  $('#col_teacher_fullname').append('<div class="table_cell" id="cell_teacher_fullname_add"></div>');
+  $('#col_teacher_mobile').append('<div class="table_cell" id="cell_teacher_mobile_add"></div>');
+  $('#col_status').append('<div class="table_cell" id="cell_status_add"></div>');
+  $('#col_student').append('<div class="table_cell" id="cell_student_add"></div>');
+  $(function() {
+    for (var i = 0; i < reservations.length; i++) {
+      $('#cell_time_' + i).click(function(e) {
+        editReservation($(e.target).attr('name'));
+      });
+    }
+    $('#cell_time_add').click(addReservation);
+  });
+}
+
+function selectAll() {
+  if ($('#btn_select_all').prop('name') && $('#btn_select_all').prop('name') === 'all') {
+    $('.checkbox').prop('checked', true);
+    $('#btn_select_all').prop('name', 'none');
+    $('#btn_select_all').text('不选');
+  } else {
+    $('.checkbox').prop('checked', false);
+    $('#btn_select_all').prop('name', 'all');
+    $('#btn_select_all').text('全选');
+  }
 }
 
 function optimize(t) {
-  $('#col_time').width(width * 0.25);
-  $('#col_teacher_fullname').width(width * 0.2);
-  $('#col_teacher_mobile').width(width * 0.25);
-  $('#col_status').width(width * 0.13);
-  $('#col_student').width(width * 0.13);
-  $('#col_time').css('margin-left', width * 0.01 + 'px');
+  $("#col_select").width(width * 0.08);
+  $('#col_time').width(width * 0.23);
+  $('#col_teacher_fullname').width(width * 0.15);
+  $('#col_teacher_mobile').width(width * 0.24);
+  $('#col_status').width(width * 0.12);
+  $('#col_student').width(width * 0.12);
+  $('#col_select').css('margin-left', width * 0.01 + 'px');
   for (var i = 0; i < reservations.length; ++i) {
     var maxHeight = Math.max(
+        $('#cell_select_' + i).height(),
         $('#cell_time_' + i).height(),
         $('#cell_teacher_fullname_' + i).height(),
         $('#cell_teacher_mobile_' + i).height(),
         $('#cell_status_' + i).height(),
         $('#cell_student_' + i).height()
       );
+    $('#cell_select_' + i).height(maxHeight);
     $('#cell_time_' + i).height(maxHeight);
     $('#cell_teacher_fullname_' + i).height(maxHeight);
     $('#cell_teacher_mobile_' + i).height(maxHeight);
@@ -106,181 +145,248 @@ function optimize(t) {
     $('#cell_student_' + i).height(maxHeight);
 
     if (i % 2 == 1) {
+      $('#cell_select_' + i).css('background-color', 'white');
       $('#cell_time_' + i).css('background-color', 'white');
       $('#cell_teacher_fullname_' + i).css('background-color', 'white');
       $('#cell_teacher_mobile_' + i).css('background-color', 'white');
       $('#cell_status_' + i).css('background-color', 'white');
       $('#cell_student_' + i).css('background-color', 'white');
     } else {
+      $('#cell_select_' + i).css('background-color', '#f3f3ff');
       $('#cell_time_' + i).css('background-color', '#f3f3ff');
       $('#cell_teacher_fullname_' + i).css('background-color', '#f3f3ff');
       $('#cell_teacher_mobile_' + i).css('background-color', '#f3f3ff');
       $('#cell_status_' + i).css('background-color', '#f3f3ff');
       $('#cell_student_' + i).css('background-color', '#f3f3ff');
     }
-
-    if (reservations[i].student_crisis_level && reservations[i].student_crisis_level !== '0') {
-      //$('#cell_student_' + i).css('background-color', 'rgba(255, 0, 0, ' + parseInt(reservations[i].student_crisis_level) / 5 +')');
-      $('#cell_student_view_' + i).css('background-color', 'rgba(255, 0, 0, ' + parseInt(reservations[i].student_crisis_level) / 1 +')');
-    }
   }
+  var s = 28;
+  if (t === "add") {
+    s = 68;
+  }
+  $("#cell_select_add").height(s);
+  $("#cell_time_add").height(s);
+  $("#cell_teacher_fullname_add").height(s);
+  $("#cell_teacher_mobile_add").height(s);
+  $("#cell_status_add").height(s);
+  $("#cell_student_add").height(s);
+
+  $('.table_head').height($('#head_select').height());
   $(t).css('left', (width - $(t).width()) / 2 - 11 + 'px');
   $(t).css('top', (height - $(t).height()) / 2 - 11 + 'px');
 }
 
-function getFeedback(index) {
-  $.post('/teacher/reservation/feedback/get', {
-    reservation_id: reservations[index].reservation_id,
-    source_id: reservations[index].source_id,
-  }, function(data, textStatus, xhr) {
+function addReservation() {
+  $('#cell_time_add').off();
+  $('#cell_time_add').first().html('<input type="text" id="input_date_add" style="width: 60px;"/><br>'
+    + '<input style="width:15px;" id="start_hour_add"/>时<input style="width:15px" id="start_minute_add"/>分<br>'
+    + '<input style="width:15px;" id="end_hour_add"/>时<input style="width:15px" id="end_minute_add"/>分');
+  $('#cell_teacher_fullname_add').first().html('<input id="teacher_fullname_add" style="width:80px" value="' + teacher.teacher_fullname + '"/>');
+  $('#cell_teacher_mobile_add').first().html('<input id="teacher_mobile_add" style="width:120px" value="' + teacher.teacher_mobile + '"/>');
+  $('#cell_status_add').first().html('<button type="button" onclick="addReservationConfirm();">确认</button>');
+  $('#cell_student_add').first().html('<button type="button" onclick="window.location.reload();">取消</button>');
+  $('#input_date_add').datepicker({
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    showButtonPanel: true,
+    dateFormat: 'yy-mm-dd',
+    showWeek: true,
+    firstDay: 1
+  });
+  optimize("add");
+}
+
+function addReservationConfirm() {
+  var startHour = $('#start_hour_add').val();
+  var startMinute = $('#start_minute_add').val();
+  var endHour = $('#end_hour_add').val();
+  var endMinute = $('#end_minute_add').val();
+  var startTime = $('#input_date_add').val() + ' ' + (startHour.length < 2 ? '0' : '') + startHour + ':';
+  if (startMinute.length == 0) {
+    startTime += '00';
+  } else if (startMinute.length == 1) {
+    startTime += '0' + startMinute;
+  } else {
+    startTime += startMinute;
+  }
+  var endTime = $('#input_date_add').val() + ' ' + (endHour.length < 2 ? '0' : '') + endHour + ':';
+  if (endMinute.length == 0) {
+    endTime += '00';
+  } else if (endMinute.length == 1) {
+    endTime += '0' + endMinute;
+  } else {
+    endTime += endMinute;
+  }
+  var payload = {
+    start_time: startTime,
+    end_time: endTime,
+    teacher_fullname: $('#teacher_fullname_add').val(),
+    teacher_mobile: $('#teacher_mobile_add').val(),
+  };
+  $.post('/teacher/reservation/add', payload, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      showFeedback(index, data.feedback);
+      viewReservations();
+    } else if (data.state === 'CHECK') {
+      addReservationCheck(payload);
     } else {
       alert(data.message);
     }
   });
 }
 
-function showFeedback(index, feedback) {
+function addReservationCheck(payload) {
   $('body').append('\
-    <div class="pop_window" id="feedback_table_' + index + '" style="text-align: left; width: 90%; height: 70%; overflow:auto;">\
-      咨询师反馈表<br>\
-      评估分类：<br>\
-      <select id="category_first_' + index + '" onchange="showSecondCategory(' + index + ')"><option value="">请选择</option></select><br>\
-      <select id="category_second_' + index + '"></select><br>\
-      出席人员：<br>\
-      <input id="participant_student_' + index + '" type="checkbox">学生</input><input id="participant_parents_' + index + '" type="checkbox">家长</input>\
-      <input id="participant_teacher_' + index + '" type="checkbox">教师</input><input id="participant_instructor_' + index + '" type="checkbox">辅导员</input>\
-      <input id="participant_other_' + index + '" type="checkbox">其他</input><br>\
-      问题评估：<br>\
-      <textarea id="problem_' + index + '" style="width: 100%; height:80px"></textarea><br>\
-      咨询记录：<br>\
-      <textarea id="record_' + index + '" style="width: 100%; height:80px"></textarea><br>\
-      是否危机个案：<select id="crisis_level_'+ index + '"><option value="0">否</option><option value="1">是</option></select><br>\
-      <div id="key_case" style="display: none">\
-        <b>重点个案：</b>\
-        <input id="key_case_' + index + '_0" type="checkbox">通报院系</input>\
-        <input id="key_case_' + index + '_1" type="checkbox">联席会议</input>\
-        <input id="key_case_' + index + '_2" type="checkbox">服药</input>\
-        <input id="key_case_' + index + '_3" type="checkbox">自杀未遂</input>\
-        <input id="key_case_' + index + '_4" type="checkbox">家长陪读</input>\
-        <br>\
-        <b>医疗诊断：</b>\
-        <input id="medical_diagnosis_' + index + '_0" type="checkbox">精神分裂诊断</input>\
-        <input id="medical_diagnosis_' + index + '_1" type="checkbox">双相诊断</input>\
-        <input id="medical_diagnosis_' + index + '_2" type="checkbox">抑郁症诊断</input>\
-        <input id="medical_diagnosis_' + index + '_3" type="checkbox">强迫症诊断</input>\
-        <input id="medical_diagnosis_' + index + '_4" type="checkbox">进食障碍诊断</input>\
-        <input id="medical_diagnosis_' + index + '_5" type="checkbox">失眠诊断</input>\
-        <input id="medical_diagnosis_' + index + '_6" type="checkbox">其他精神症状诊断</input>\
-        <input id="medical_diagnosis_' + index + '_7" type="checkbox">躯体疾病诊断</input>\
-      </div>\
-      <button type="button" onclick="submitFeedback(' + index + ');">提交</button>\
-      <button type="button" onclick="$(\'#feedback_table_' + index + '\').remove();">取消</button>\
+    <div id="pop_add_reservation_check" class="pop_window" style="width: 50%">\
+      咨询师信息有变更，是否更新？\
+      <br>\
+      <button type="button" name="confirm">确认</button>\
+      <button type="button" onclick="$(\'#pop_add_reservation_check\').remove();">取消</button>\
     </div>\
   ');
   $(function() {
-    showFirstCategory(index);
-    if (feedback.category.length > 0) {
-      $('#category_first_' + index).val(feedback.category.charAt(0));
-      $('#category_first_' + index).change();
-      $('#category_second_' + index).val(feedback.category);
-    }
-    if (feedback.participants.length > 0) {
-      $('#participant_student_' + index).first().attr('checked', feedback.participants[0] > 0);
-      $('#participant_parents_' + index).first().attr('checked', feedback.participants[1] > 0);
-      $('#participant_teacher_' + index).first().attr('checked', feedback.participants[2] > 0);
-      $('#participant_instructor_' + index).first().attr('checked', feedback.participants[3] > 0);
-      $('#participant_other_' + index).first().attr('checked', feedback.participants[4] > 0);
-    }
-    var i = 1;
-    for (i = 0; i < 5; i++) {
-      $('#key_case_' + index + '_' + i).first().attr('checked', feedback.key_case[i] > 0);
-    }
-    for (i = 0; i < 8; i++) {
-      $('#medical_diagnosis_' + index + '_' + i).first().attr('checked', feedback.medical_diagnosis[i] > 0);
-    }
-    $('#problem_' + index).val(feedback.problem);
-    $('#record_' + index).val(feedback.record);
-    $('#crisis_level_' + index).change(function() {
-      if ($('#crisis_level_' + index).val() === "0") {
-        $('#key_case').hide();
-      } else {
-        $('#key_case').show();
-      }
+    $('#pop_add_reservation_check [name=confirm]').click(function() {
+      $('#pop_add_reservation_check').remove();
+      addReservationCheckConfirm(payload);
     });
-    $('#crisis_level_' + index).val(feedback.crisis_level);
-    $('#crisis_level_' + index).change();
-    optimize('#feedback_table_' + index);
+  });
+  optimize('#pop_add_reservation_check');
+}
+
+function addReservationCheckConfirm(payload) {
+  payload['force'] = 'FORCE';
+  $.post('/teacher/reservation/add', payload, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      viewReservations();
+    } else if (data.state === 'CHECK') {
+      addReservationCheck(payload);
+    } else {
+      alert(data.message);
+    }
   });
 }
 
-function showFirstCategory(index) {
-  for (var name in firstCategory) {
-    if (firstCategory.hasOwnProperty(name)) {
-      $('#category_first_' + index).append($("<option>", {
-        value: name,
-        text: firstCategory[name],
-      }));
-    }
-  }
+function editReservation(index) {
+  $("#cell_time_" + index).height(68);
+  $('#cell_time_' + index).off();
+  $('#cell_time_' + index).first().html('<input type="text" id="input_date_' + index + '" style="width: 60px;"/><br>'
+    + '<input style="width:15px;" id="start_hour_' + index + '"/>时<input style="width:15px" id="start_minute_' + index + '"/>分<br>'
+    + '<input style="width:15px;" id="end_hour_' + index + '"/>时<input style="width:15px" id="end_minute_' + index + '"/>分');
+  $('#cell_teacher_fullname_' + index).first().html('<input id="teacher_fullname_' + index + '" style="width:80px" value="' + teacher.teacher_fullname + '"/>');
+  $('#cell_teacher_mobile_' + index).first().html('<input id="teacher_mobile_' + index + '" style="width:120px" value="' + teacher.teacher_mobile + '"/>');
+  $('#cell_status_' + index).first().html('<button type="button" onclick="editReservationConfirm(' + index + ');">确认</button>');
+  $('#cell_student_' + index).first().html('<button type="button" onclick="window.location.reload();">取消</button>');
+  $('#input_date_' + index).datepicker({
+    showOtherMonths: true,
+    selectOtherMonths: true,
+    showButtonPanel: true,
+    dateFormat: 'yy-mm-dd',
+    showWeek: true,
+    firstDay: 1
+  });
+  optimize();
 }
 
-function showSecondCategory(index) {
-  var first = $('#category_first_' + index).val();
-  $('#category_second_' + index).find("option").remove().end().append('<option value="">请选择</option>').val('');
-  if ($('#category_first_' + index).selectedIndex === 0) {
-    return;
+function editReservationConfirm(index) {
+  var startHour = $('#start_hour_' + index).val();
+  var startMinute = $('#start_minute_' + index).val();
+  var endHour = $('#end_hour_' + index).val();
+  var endMinute = $('#end_minute_' + index).val();
+  var startTime = $('#input_date_' + index).val() + ' ' + (startHour.length < 2 ? '0' : '') + startHour + ':';
+  if (startMinute.length == 0) {
+    startTime += '00';
+  } else if (startMinute.length == 1) {
+    startTime += '0' + startMinute;
+  } else {
+    startTime += startMinute;
   }
-  if (secondCategory.hasOwnProperty(first)) {
-    for (var name in secondCategory[first]) {
-      if (secondCategory[first].hasOwnProperty(name)) {
-        var option = new Option(name, secondCategory[first][name]);
-        $('#category_second_' + index).append($("<option>", {
-          value: name,
-          text: secondCategory[first][name],
-        }));
-      }
-    }
-  }
-}
-
-function submitFeedback(index) {
-  var participants = [];
-  participants.push($('#participant_student_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_parents_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_teacher_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_instructor_' + index).first().is(':checked') ? 1 : 0);
-  participants.push($('#participant_other_' + index).first().is(':checked') ? 1 : 0);
-  var i = 1;
-  var keyCase = [];
-  for (i = 0; i < 5; i++) {
-    keyCase.push($('#key_case_' + index + '_' + i).first().is(':checked') ? 1 : 0);
-  }
-  var medicalDiagnosis = [];
-  for (i = 0; i < 8; i++) {
-    medicalDiagnosis.push($('#medical_diagnosis_' + index + '_' + i).first().is(':checked') ? 1 : 0);
+  var endTime = $('#input_date_' + index).val() + ' ' + (endHour.length < 2 ? '0' : '') + endHour + ':';
+  if (endMinute.length == 0) {
+    endTime += '00';
+  } else if (endMinute.length == 1) {
+    endTime += '0' + endMinute;
+  } else {
+    endTime += endMinute;
   }
   var payload = {
     reservation_id: reservations[index].reservation_id,
-    category: $('#category_second_' + index).val(),
-    participants: participants,
-    problem: $('#problem_' + index).val(),
-    record: $('#record_' + index).val(),
-    crisis_level: $('#crisis_level_' + index).val(),
-    key_case: keyCase,
-    medical_diagnosis: medicalDiagnosis
+    start_time: startTime,
+    end_time: endTime,
+    teacher_fullname: $('#teacher_fullname_' + index).val(),
+    teacher_mobile: $('#teacher_mobile_' + index).val(),
+  };
+  $.post('/teacher/reservation/edit', payload, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      viewReservations();
+    } else if (data.state === 'CHECK') {
+      editReservationCheck(payload);
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+function editReservationCheck(payload) {
+  $('body').append('\
+    <div id="pop_edit_reservation_check" class="pop_window" style="width: 50%">\
+      咨询师信息有变更，是否更新？\
+      <br>\
+      <button type="button" name="confirm">确认</button>\
+      <button type="button" onclick="$(\'#pop_edit_reservation_check\').remove();">取消</button>\
+    </div>\
+  ');
+  $(function() {
+    $('#pop_edit_reservation_check [name=confirm]').click(function() {
+      $('#pop_edit_reservation_check').remove();
+      editReservationCheckConfirm(payload);
+    });
+  });
+  optimize('#pop_edit_reservation_check');
+}
+
+function editReservationCheckConfirm(payload) {
+  payload['force'] = 'FORCE';
+  $.post('/teacher/reservation/edit', payload, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      viewReservations();
+    } else if (data.state === 'CHECK') {
+      addReservationCheck(payload);
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+function removeReservations() {
+  $('body').append('\
+    <div id="pop_remove_reservations" class="pop_window" style="width: 50%">\
+      确认删除选中的咨询记录？\
+      <br>\
+      <button type="button" onclick="$(\'#pop_remove_reservations\').remove();removeReservationsConfirm();">确认</button>\
+      <button type="button" onclick="$(\'#pop_remove_reservations\').remove();">取消</button>\
+    </div>\
+  ');
+  optimize('#pop_remove_reservations');
+}
+
+function removeReservationsConfirm() {
+  var reservationIds = [];
+  for (var i = 0; i < reservations.length; ++i) {
+    if ($('#cell_checkbox_' + i)[0].checked) {
+      reservationIds.push(reservations[i].reservation_id);
+    }
+  }
+  var payload = {
+    reservation_ids: reservationIds,
   };
   $.ajax({
-    url: '/teacher/reservation/feedback/submit',
-    type: 'POST',
+    url: '/teacher/reservation/remove',
+    type: "POST",
     dataType: 'json',
     data: payload,
     traditional: true,
   })
   .done(function(data) {
     if (data.state === 'SUCCESS') {
-      successFeedback(index);
       viewReservations();
     } else {
       alert(data.message);
@@ -288,28 +394,44 @@ function submitFeedback(index) {
   });
 }
 
-function successFeedback(index) {
-  $('#feedback_table_' + index).remove();
+function cancelReservations() {
   $('body').append('\
-    <div id="pop_success_feedback" class="pop_window" style="width: 50%;">\
-      您已成功提交反馈！<br>\
-      <button type="button" onclick="$(\'#pop_success_feedback\').remove();">确定</button>\
+    <div id="pop_cancel_reservations" class="pop_window" style="width: 50%">\
+      确认取消选中的预约？\
+      <br>\
+      <button type="button" onclick="$(\'#pop_cancel_reservations\').remove();cancelReservationsConfirm();">确认</button>\
+      <button type="button" onclick="$(\'#pop_cancel_reservations\').remove();">取消</button>\
     </div>\
   ');
-  optimize('#pop_success_feedback');
+  optimize('#pop_cancel_reservations');
 }
 
-function queryStudent() {
-  $.post('/teacher/student/query', {
-    student_username: $('#query_student').val()
-  }, function(data, textStatus, xhr) {
+function cancelReservationsConfirm() {
+  var reservationIds = [];
+  for (var i = 0; i < reservations.length; ++i) {
+    if ($('#cell_checkbox_' + i)[0].checked) {
+      reservationIds.push(reservations[i].reservation_id);
+    }
+  }
+  var payload = {
+    reservation_ids: reservationIds,
+  };
+  $.ajax({
+    url: '/teacher/reservation/cancel',
+    type: "POST",
+    dataType: 'json',
+    data: payload,
+    traditional: true,
+  })
+  .done(function(data) {
     if (data.state === 'SUCCESS') {
-      showStudent(data.student_info, data.reservations);
+      viewReservations();
     } else {
       alert(data.message);
     }
   });
 }
+
 function getStudent(index) {
   $.post('/teacher/student/get', {
     student_id: reservations[index].student_id
