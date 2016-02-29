@@ -250,3 +250,11 @@ func Logout(w http.ResponseWriter, r *http.Request, userId string, userType mode
 
 	return result
 }
+
+func GetKnowingMethods(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	var result = map[string]interface{}{"state": "SUCCESS"}
+
+	result["knowing_methods"] = models.KnowingMethods
+
+	return result
+}

@@ -1,12 +1,10 @@
 var width = $(window).width();
 var height = $(window).height();
 var reservations;
-var knowingMethods = ['与导师、辅导员交谈', '与同学交谈', '与家人交谈', '与相关行业在职人员交谈', 
-  '参加宣讲会、招聘会', '参加相关讲座和工作坊', '阅读报纸、书籍中的就业信息',
-  '浏览求职网站', '选修职业辅导课程', '到就业指导中心寻求帮助', '向院系寻求相关就业资料',
-  '参加有关的职业生涯团体', '参加过其他学生团体', '在用人单位实习或者兼职'];
+var knowingMethods;
 
 function viewReservations() {
+  getKnowingMethods();
   if ($('#query_date').val() !== '') {
     queryReservations();
     return;
@@ -82,6 +80,14 @@ function queryStudent() {
       showStudent(data.student_info);
     } else {
       alert(data.message);
+    }
+  });
+}
+
+function getKnowingMethods() {
+  $.getJSON('/user/knowing_methods', function(json, textStatus) {
+    if (json.state === 'SUCCESS') {
+      knowingMethods = json.knowing_methods;
     }
   });
 }
@@ -570,7 +576,7 @@ function showStudent(student, reservation, feedback) {
         <div id="student_expectation_' + student.id + '"></div>\
         <div id="student_feedback_' + student.id + '"></div>\
         <div style="margin: 10px 0">\
-          <button type="button" onclick="exportStudent(\'' + student.id + '\');">导出</button>\
+          <button id="export_' + student.id + '" type="button">导出</button>\
           <button type="button" onclick="$(\'#pop_show_student_' + student.id + '\').remove();">关闭</button>\
         </div>\
       </div>\
@@ -602,6 +608,13 @@ function showStudent(student, reservation, feedback) {
         期望的咨询次数约为：' + reservation.expected_time + '<br>\
         填写日期：' + reservation.time + '<br>\
       ');
+      $('#export_' + student.id).click(function() {
+        exportReservatingStudentInfo(reservation.id);
+      });
+    } else {
+      $('#export_' + student.id).click(function() {
+        exportStudent(student.id);
+      });
     }
     if (feedback) {
 
@@ -695,6 +708,19 @@ function deleteStudentAccountSuccess(studentId) {
     </div>\
   ');
   optimize('#pop_delete_student_account_success');
+}
+
+function exportReservatingStudentInfo(reservationId) {
+  console.log(reservationId);
+  $.post('/admin/reservation/student/export', {
+    reservation_id: reservationId,
+  }, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      window.open(data.url);
+    } else {
+      alert(data.message);
+    }
+  });
 }
 
 function exportStudent(studentId) {

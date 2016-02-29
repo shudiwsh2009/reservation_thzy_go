@@ -87,3 +87,7 @@ type Admin struct {
 	Password   string        `bson:"password"`
 	UserType   UserType      `bson:"user_type"`
 }
+
+var KnowingMethods = []string{"与导师、辅导员交谈", "与同学交谈", "与家人交谈", "与相关行业在职人员交谈", "参加宣讲会、招聘会",
+	"参加相关讲座和工作坊", "阅读报纸、书籍中的就业信息", "浏览求职网站", "选修职业辅导课程", "到就业指导中心寻求帮助",
+	"向院系寻求相关就业资料", "参加有关的职业生涯团体", "参加过其他学生团体", "在用人单位实习或者兼职"};

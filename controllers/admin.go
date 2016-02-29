@@ -237,6 +237,7 @@ func GetReservatingStudentInfoByAdmin(w http.ResponseWriter, r *http.Request, us
 	studentJson["working_period"] = student.WorkingPeriod
 	studentJson["knowing_methods"] = student.KnowingMethods
 	result["student_info"] = studentJson
+	reservationJson["id"] = reservation.Id.Hex()
 	reservationJson["problem"] = reservation.StudentExpectation.Problem
 	reservationJson["expectation"] = reservation.StudentExpectation.Expectation
 	reservationJson["expected_time"] = reservation.StudentExpectation.ExpectedTime
@@ -274,6 +275,22 @@ func DeleteStudentAccountByAdmin(w http.ResponseWriter, r *http.Request, userId 
 		ErrorHandler(w, r, err)
 		return nil
 	}
+
+	return result
+}
+
+func ExportReservatingStudentInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
+	reservationId := r.PostFormValue("reservation_id")
+
+	var result = map[string]interface{}{"state": "SUCCESS"}
+	var al = buslogic.AdminLogic{}
+
+	url, err := al.ExportReservatingStudentInfoByAdmin(reservationId, userId, userType)
+	if err != nil {
+		ErrorHandler(w, r, err)
+		return nil
+	}
+	result["url"] = url
 
 	return result
 }
