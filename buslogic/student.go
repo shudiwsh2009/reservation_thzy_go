@@ -153,7 +153,7 @@ func (sl *StudentLogic) SubmitFeedbackByStudent(reservationId string, consulting
 		return nil, errors.New("请重新登录")
 	} else if len(reservationId) == 0 {
 		return nil, errors.New("咨询已下架")
-	} else if len(consultingCount) == 0 || len(scores) != 15 || len(help) == 0 || len(drawback) == 0 {
+	} else if len(consultingCount) == 0 || len(scores) != 14 || len(help) == 0 || len(drawback) == 0 {
 		return nil, errors.New("请完整填写反馈")
 	}
 	student, err := models.GetStudentById(userId)

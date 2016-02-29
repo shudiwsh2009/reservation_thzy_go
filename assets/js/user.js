@@ -78,47 +78,10 @@ function studentRegister() {
     workingExperience = $('#working_experience_3').val();
   }
   var knowingMethods = [];
-  if ($('#knowing_method_1').is(':checked')) {
-    knowingMethods.push(1);
-  } 
-  if ($('#knowing_method_2').is(':checked')) {
-    knowingMethods.push(2);
-  } 
-  if ($('#knowing_method_3').is(':checked')) {
-    knowingMethods.push(3);
-  } 
-  if ($('#knowing_method_4').is(':checked')) {
-    knowingMethods.push(4);
-  } 
-  if ($('#knowing_method_5').is(':checked')) {
-    knowingMethods.push(5);
-  } 
-  if ($('#knowing_method_6').is(':checked')) {
-    knowingMethods.push(6);
-  } 
-  if ($('#knowing_method_7').is(':checked')) {
-    knowingMethods.push(7);
-  } 
-  if ($('#knowing_method_8').is(':checked')) {
-    knowingMethods.push(8);
-  } 
-  if ($('#knowing_method_9').is(':checked')) {
-    knowingMethods.push(9);
-  } 
-  if ($('#knowing_method_10').is(':checked')) {
-    knowingMethods.push(10);
-  } 
-  if ($('#knowing_method_11').is(':checked')) {
-    knowingMethods.push(11);
-  } 
-  if ($('#knowing_method_12').is(':checked')) {
-    knowingMethods.push(12);
-  } 
-  if ($('#knowing_method_13').is(':checked')) {
-    knowingMethods.push(13);
-  }
-  if ($('#knowing_method_14').is(':checked')) {
-    knowingMethods.push(14);
+  for (var i = 1; i <= 14; i++) {
+    if ($('#knowing_method_' + i).is(':checked')) {
+      knowingMethods.push(i);
+    }
   }
   var emergencyPerson = $('#emergency_person').val();
   var emergencyMobile = $('#emergency_mobile').val();
@@ -153,7 +116,6 @@ function studentRegister() {
     working_period: workingPeriod,
     knowing_methods: knowingMethods,
   };
-  console.log(payload);
   $.ajax({
     type: 'POST',
     async: false,
