@@ -153,7 +153,7 @@ function makeReservationData(index) {
       期望的咨询次数约为：<br>\
       <input id="expected_time_1" type="radio">1次\
       <input id="expected_time_2" type="radio">2次\
-      <input id="expected_time_3" type="radio">3次\
+      <input id="expected_time_3" type="radio">3次<br>\
       <button type="button" onclick="makeReservationConfirm(' + index + ');">确定</button>\
       <button type="button" onclick="$(\'.pop_window\').remove();">取消</button>\
     </div>\
@@ -178,9 +178,9 @@ function makeReservationData(index) {
     } else if (student.has_mental_consulting === '是') {
       $('#has_mental_consulting_yes').prop('checked', true);
     }
-    if (student.has_other_consulting === '否') {
+    if (student.other_consulting_now === '否') {
       $('#has_other_consulting_no').prop('checked', true);
-    } else if (student.has_other_consulting === '是') {
+    } else if (student.other_consulting_now === '是') {
       $('#has_other_consulting_yes').prop('checked', true);
       $('#other_consulting_now').val(student.other_consulting_now);
     }
@@ -289,7 +289,14 @@ function makeReservationConfirm(index) {
     expectation: expectation,
     expected_time: expectedTime,
   };
-  $.post('/student/reservation/make', payload, function(data, textStatus, xhr) {
+  $.ajax({
+    url: '/student/reservation/make',
+    type: "POST",
+    dataType: 'json',
+    data: payload,
+    traditional: true,
+  })
+  .done(function(data) {
     if (data.state === 'SUCCESS') {
       makeReservationSuccess(index);
     } else {

@@ -142,9 +142,7 @@ function refreshDataTable(reservations) {
         + '<button type="button" id="cell_student_view_' + i + '" onclick="getStudent(' + i + ');">查看'
         + '</button></div>');
     } else if (reservations[i].status === 'FEEDBACK') {
-      $('#col_status').append('<div class="table_cell" id="cell_status_' + i + '">'
-        + '<button type="button" id="cell_status_feedback_' + i + '" onclick="getFeedback(' + i + ');">'
-        + '反馈</button></div>');
+      $('#col_status').append('<div class="table_cell" id="cell_status_' + i + '">已预约</div>');
       $('#col_student').append('<div class="table_cell" id="cell_student_' + i + '">' 
         + '<button type="button" id="cell_student_view_' + i + '" onclick="getStudent(' + i + ');">查看'
         + '</button></div>');

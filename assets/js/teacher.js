@@ -84,9 +84,7 @@ function refreshDataTable(reservations) {
         + '<button type="button" id="cell_student_view_' + i + '" onclick="getStudent(' + i + ');" style="padding: 2px 2px">查看'
         + '</button></div>');
     } else if (reservations[i].status === 'FEEDBACK') {
-      $('#col_status').append('<div class="table_cell" id="cell_status_' + i + '">'
-        + '<button type="button" id="cell_status_feedback_' + i + '" onclick="getFeedback(' + i + ');" style="padding: 2px 2px">'
-        + '反馈</button></div>');
+      $('#col_status').append('<div class="table_cell" id="cell_status_' + i + '">已预约</div>');
       $('#col_student').append('<div class="table_cell" id="cell_student_' + i + '">' 
         + '<button type="button" id="cell_student_view_' + i + '" onclick="getStudent(' + i + ');" style="padding: 2px 2px">查看'
         + '</button></div>');
@@ -416,6 +414,7 @@ function cancelReservationsConfirm() {
   var payload = {
     reservation_ids: reservationIds,
   };
+  console.log(payload);
   $.ajax({
     url: '/teacher/reservation/cancel',
     type: "POST",
@@ -486,6 +485,7 @@ function showStudent(student, reservation, feedback) {
     } else if (student.working_experience === '3') {
       $('#working_experience_' + student.id).text('没有任何工作经验');
     }
+    console.log(student.knowing_methods);
     for (var i = 0; i < student.knowing_methods.length; i++) {
       $('#knowing_methods_' + student.id).text($('#knowing_methods_' + student.id).text() + " " + knowingMethods[student.knowing_methods[i] - 1]);
     }

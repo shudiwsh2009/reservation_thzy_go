@@ -3,6 +3,7 @@ package workflow
 import (
 	"github.com/shudiwsh2009/reservation_thzy_go/models"
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
+	"strconv"
 )
 
 func ExportStudent(student *models.Student, reservation *models.Reservation, filename string) error {
@@ -45,9 +46,10 @@ func ExportStudent(student *models.Student, reservation *models.Reservation, fil
 
 func ExportReservations(reservations []*models.Reservation, filename string) error {
 	data := make([][]string, 0)
-	data = append(data, []string{"日期", "星期", "时间段", "咨询师", "来访者", "性别", "入学年份", "院系", "来访次数"})
-	for _, res := range reservations {
+	data = append(data, []string{"序号", "日期", "星期", "时间段", "咨询师", "来访者姓名", "学号", "性别", "入学年份", "院系", "来访次数"})
+	for index, res := range reservations {
 		row := make([]string, 0)
+		row = append(row, strconv.Itoa(index + 1))
 		row = append(row, res.StartTime.In(utils.Location).Format(utils.DATE_PATTERN))
 		row = append(row, utils.Weekdays[res.StartTime.In(utils.Location).Weekday()])
 		row = append(row, res.StartTime.In(utils.Location).Format(utils.CLOCK_PATTERN) + " - " +
@@ -59,6 +61,7 @@ func ExportReservations(reservations []*models.Reservation, filename string) err
 		}
 		if student, err := models.GetStudentById(res.StudentId); err == nil {
 			row = append(row, student.Fullname)
+			row = append(row, student.Username)
 			row = append(row, student.Gender)
 			row = append(row, student.EnterYear)
 			row = append(row, student.College)
