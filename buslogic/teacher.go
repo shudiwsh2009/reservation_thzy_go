@@ -176,6 +176,7 @@ func (tl *TeacherLogic) CancelReservationsByTeacher(reservationIds []string, use
 		}
 		if reseravtion.Status == models.RESERVATED && reseravtion.StartTime.After(utils.GetNow()) {
 			reseravtion.Status = models.AVAILABLE
+			reseravtion.StudentId = ""
 			reseravtion.StudentFeedback = models.StudentFeedback{}
 			reseravtion.StudentExpectation = models.StudentExpectation{}
 			if models.UpsertReservation(reseravtion) == nil {

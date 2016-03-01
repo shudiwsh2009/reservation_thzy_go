@@ -138,6 +138,7 @@ func main() {
 	adminRouter.HandleFunc("/reservation/cancel", handleWithCookie(controllers.CancelReservationsByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/reservation/student/get", handleWithCookie(controllers.GetReservatingStudentInfoByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/reservation/student/export", handleWithCookie(controllers.ExportReservatingStudentInfoByAdmin)).Methods("POST")
+	adminRouter.HandleFunc("/reservation/student/set", handleWithCookie(controllers.SetStudentByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/student/password/reset", handleWithCookie(controllers.ResetStudentPasswordByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/student/account/delete", handleWithCookie(controllers.DeleteStudentAccountByAdmin)).Methods("POST")
 	adminRouter.HandleFunc("/student/export", handleWithCookie(controllers.ExportStudentByAdmin)).Methods("POST")

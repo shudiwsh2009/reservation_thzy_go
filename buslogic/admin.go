@@ -185,6 +185,7 @@ func (al *AdminLogic) CancelReservationsByAdmin(reservationIds []string, userId 
 		}
 		if reseravtion.Status == models.RESERVATED && reseravtion.StartTime.After(time.Now().Local()) {
 			reseravtion.Status = models.AVAILABLE
+			reseravtion.StudentId = ""
 			reseravtion.StudentFeedback = models.StudentFeedback{}
 			reseravtion.StudentExpectation = models.StudentExpectation{}
 			if models.UpsertReservation(reseravtion) == nil {
@@ -326,6 +327,43 @@ func (al *AdminLogic) ExportStudentByAdmin(studentId string, userId string, user
 		return "", err
 	}
 	return "/" + utils.ExportFolder + filename, nil
+}
+
+func (al *AdminLogic) SetStudentByAdmin(reservationId string, studentUsername string,
+	userId string, userType models.UserType) (*models.Reservation, error) {
+	if len(userId) == 0 {
+		return nil, errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return nil, errors.New("权限不足")
+	} else if len(reservationId) == 0 {
+		return nil, errors.New("咨询已下架")
+	} else if len(studentUsername) == 0 {
+		return nil, errors.New("学生学号为空")
+	}
+	admin, err := models.GetAdminById(userId)
+	if err != nil || admin.UserType != models.ADMIN {
+		return nil, errors.New("管理员账户出错，请联系技术支持")
+	}
+	student, err := models.GetStudentByUsername(studentUsername)
+	if err != nil {
+		return nil, errors.New("学生未注册")
+	}
+	reservation, err := models.GetReservationById(reservationId)
+	if err != nil || reservation.Status == models.DELETED {
+		return nil, errors.New("咨询已下架")
+	} else if reservation.Status != models.AVAILABLE {
+		return nil, errors.New("咨询已被预约")
+	}
+	// 更新咨询信息
+	reservation.StudentId = student.Id.Hex()
+	reservation.Status = models.RESERVATED
+	reservation.StudentExpectation = models.StudentExpectation{
+		Time: utils.GetNow(),
+	}
+	if models.UpsertReservation(reservation) != nil {
+		return nil, errors.New("获取数据失败")
+	}
+	return reservation, nil
 }
 
 // 管理员查询学生信息

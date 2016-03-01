@@ -124,7 +124,7 @@ function refreshDataTable(reservations) {
     $('#col_select').append('<div class="table_cell" id="cell_select_' + i + '">'
       + '<input class="checkbox" type="checkbox" id="cell_checkbox_' + i + '"></div>');
     $('#col_time').append('<div class="table_cell" id="cell_time_' + i + '" name="' + i + '">' + reservations[i].start_time + 
-      '至' + reservations[i].end_time + '</div>');
+      ' 至 ' + reservations[i].end_time + '</div>');
     $('#col_teacher_fullname').append('<div class="table_cell" id="cell_teacher_fullname_'
       + i + '">' + reservations[i].teacher_fullname + '</div>');
     $('#col_teacher_username').append('<div class="table_cell" id="cell_teacher_username_'
@@ -518,6 +518,42 @@ function cancelReservationsConfirm() {
   });
 }
 
+function setStudent(index) {
+  $('body').append('\
+    <div id="pop_set_student_' + index + '" class="pop_window" style="width: 50%;">\
+      请输入您要制定的学生学号（必须为已注册学生）：<br>\
+      <input id="student_username_' + index + '"/><br>\
+      <button type="button" onclick="setStudentConfirm(' + index + ');">确认</button>\
+      <button type="button" style="margin-left:20px" onclick="$(\'#pop_set_student_' + index + '\').remove();">取消</button>\
+    </div>\
+  ');
+  optimize('#pop_set_student_' + index);
+}
+
+function setStudentConfirm(index) {
+  $.post('/admin/reservation/student/set', {
+    reservation_id: reservations[index].reservation_id,
+    student_username: $('#student_username_' + index).val(),
+  }, function(data, textStatus, xhr) {
+    if (data.state == 'SUCCESS') {
+      successSetStudent(index);
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+function successSetStudent(index) {
+  $('#pop_set_student_' + index).remove();
+  $('body').append('\
+    <div id="pop_success_set_student" class="pop_window" style="width: 50%;">\
+      成功指定学生！<br>\
+      <button type="button" onclick="$(\'#pop_success_set_student\').remove();viewReservations();">确定</button>\
+    </div>\
+  ');
+  optimize('#pop_success_set_student');
+}
+
 function getStudent(index) {
   $.post('/admin/reservation/student/get', {
     reservation_id: reservations[index].reservation_id
@@ -609,6 +645,14 @@ function showStudent(student, reservation, feedback) {
 }
 
 function resetStudentPassword(studentId) {
+  var password = $('#password_' + studentId).val();
+  var passwordConfirm = $('#password_check_' + studentId).val();
+  if (password !== passwordConfirm) {
+    alert('两次密码不一致，请重新输入');
+    $('#password_' + studentId).val('');
+    $('#password_check_' + studentId).val('');
+    return;
+  }
   $('body').append('\
     <div id="pop_reset" class="pop_window" style="width: 50%;">\
       您确定要重置该生的密码？<br>\
@@ -633,14 +677,16 @@ function resetStudentPasswordConfirm(studentId) {
     password: password,
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      resetStudentPasswordSuccess();
+      resetStudentPasswordSuccess(studentId);
     } else {
       alert(data.message);
     }
   });
 }
 
-function resetStudentPasswordSuccess() {
+function resetStudentPasswordSuccess(studentId) {
+  $('#password_' + studentId).val('');
+  $('#password_check_' + studentId).val('');
   $('body').append('\
     <div id="pop_reset_success" class="pop_window" style="width: 50%;">\
       密码重置成功！<br>\
@@ -677,7 +723,7 @@ function deleteStudentAccountConfirmCheck(studentId) {
     student_id: studentId,
   }, function(data, textStatus, xhr) {
     if (data.state === 'SUCCESS') {
-      deleteStudentAccountSuccess();
+      deleteStudentAccountSuccess(studentId);
     } else {
       alert(data.message);
     }

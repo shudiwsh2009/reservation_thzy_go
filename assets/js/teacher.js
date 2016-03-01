@@ -414,7 +414,6 @@ function cancelReservationsConfirm() {
   var payload = {
     reservation_ids: reservationIds,
   };
-  console.log(payload);
   $.ajax({
     url: '/teacher/reservation/cancel',
     type: "POST",
@@ -485,7 +484,6 @@ function showStudent(student, reservation, feedback) {
     } else if (student.working_experience === '3') {
       $('#working_experience_' + student.id).text('没有任何工作经验');
     }
-    console.log(student.knowing_methods);
     for (var i = 0; i < student.knowing_methods.length; i++) {
       $('#knowing_methods_' + student.id).text($('#knowing_methods_' + student.id).text() + " " + knowingMethods[student.knowing_methods[i] - 1]);
     }
