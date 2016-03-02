@@ -161,8 +161,6 @@ select{
     background-color: rgba(255, 255, 255, 0.9);
 }
 .has_children {
-  background: #555;
-  color: #fff;
   cursor: pointer;
 }
 .highlight {
@@ -171,7 +169,6 @@ select{
 }
 div .children{
   margin: 0;
-  background: #888;
   display: none;
   float: left;
   width: 600px;

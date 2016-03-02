@@ -34,11 +34,8 @@ func (rl *ReservationLogic) GetReservationsByStudent(userId string, userType mod
 	for _, r := range reservations {
 		if r.Status == models.AVAILABLE && r.StartTime.Before(utils.GetNow()) {
 			continue
-		} else if strings.EqualFold(r.StudentId, student.Id.Hex()) {
-			result = append(result, r)
-		} else if r.Status == models.AVAILABLE {
-			result = append(result, r)
 		}
+		result = append(result, r)
 	}
 	return result, nil
 }

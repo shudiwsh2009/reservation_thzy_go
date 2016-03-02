@@ -14,6 +14,8 @@ const (
 	FEEDBACK
 	DELETED
 	CLOSED
+	RESERVATED_OTHER
+	FEEDBACK_OTHER
 )
 
 var reservationStatuses = [...]string{
@@ -22,6 +24,8 @@ var reservationStatuses = [...]string{
 	"FEEDBACK",
 	"DELETED",
 	"CLOSED",
+	"RESERVATED_OTHER",
+	"FEEDBACK_OTHER",
 }
 
 func (rs ReservationStatus) String() string {

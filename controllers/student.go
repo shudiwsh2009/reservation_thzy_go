@@ -6,7 +6,7 @@ import (
 	"github.com/shudiwsh2009/reservation_thzy_go/utils"
 	"net/http"
 	"strconv"
-	"time"
+	"strings"
 )
 
 func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
@@ -67,10 +67,18 @@ func ViewReservationsByStudent(w http.ResponseWriter, r *http.Request, userId st
 		}
 		if res.Status == models.AVAILABLE {
 			resJson["status"] = models.AVAILABLE.String()
-		} else if res.Status == models.RESERVATED && res.StartTime.Before(time.Now().In(utils.Location)) {
-			resJson["status"] = models.FEEDBACK.String()
+		} else if res.Status == models.RESERVATED && res.StartTime.Before(utils.GetNow()) {
+			if strings.EqualFold(res.StudentId, student.Id.Hex()) {
+				resJson["status"] = models.FEEDBACK.String()
+			} else {
+				resJson["status"] = models.FEEDBACK_OTHER.String()
+			}
 		} else {
-			resJson["status"] = models.RESERVATED.String()
+			if strings.EqualFold(res.StudentId, student.Id.Hex()) {
+				resJson["status"] = models.RESERVATED.String()
+			} else {
+				resJson["status"] = models.RESERVATED_OTHER.String()
+			}
 		}
 		array = append(array, resJson)
 	}

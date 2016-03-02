@@ -401,7 +401,7 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 	var reservations []*models.Reservation
 	for _, reservationId := range reservationIds {
 		reservation, err := models.GetReservationById(reservationId)
-		if err != nil {
+		if err != nil || reservation.Status != models.RESERVATED {
 			continue
 		}
 		reservations = append(reservations, reservation)

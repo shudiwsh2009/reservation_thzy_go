@@ -48,6 +48,10 @@ function refreshDataTable(reservations) {
       $('#col_status').append('<div class="table_cell" id="cell_status_' + i
         + '"><button type="button" id="cell_status_b_' + i + '" onclick="getFeedback(' + i
         + ')" style="padding: 2px 2px">反馈</button></div>');
+    } else if (reservations[i].status === 'RESERVATED_OTHER' || reservations[i].status === 'FEEDBACK_OTHER') {
+      $('#col_status').append('<div class="table_cell" id="cell_status_' + i
+        + '"><button type="button" id="cell_status_b_' + i + '" disabled="true" style="padding: 2px 2px">已占用</button>'
+        + '</div>');
     }
   }
 }
@@ -100,51 +104,59 @@ function makeReservationData(index) {
     <div class="pop_window" id="make_reservation_data_' + index + '" style="text-align:left; width: 90%; height: 60%; overflow: auto;">\
       <div style="text-align:center;font-size:23px">学生信息登记表</div><br>\
       ＊加粗为必填项<br>\
-      <b>姓　　名：</b><input id="fullname" value="' + student.fullname + '"><br>\
-      <b>性　　别：</b><select id="gender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select><br>\
-      出生年月：<input id="birthday" value="' + student.birthday + '"><br>\
-      年　　龄：<input id="age" value="' + student.age + '"><br>\
-      民　　族：<input id="ethnic" value="' + student.ethnic + '"><br>\
-      入学年份：<input id="enter_year" value="' + student.enter_year + '"><br>\
-      生源地：<input id="source_place" value="' + student.source_place + '"><br>\
-      <b>院　　系：</b><input id="college" value="' + student.college + '"><br>\
-      原就读学校（本科/硕士）：<input id="original_school" value="' + student.original_school + '"><br>\
-      原专业（如有转换）：<input id="original_major" value="' + student.original_major + '"><br>\
-      <b>电子邮件：</b><input id="email" value="' + student.email + '"><br>\
-      <b>联系电话：</b><input id="mobile" value="' + student.mobile + '"><br>\
-      婚姻状况：<select id="marriage"><option value="">请选择</option><option value="单身">单身</option>\
-        <option value="恋爱">恋爱</option><option value="结婚">结婚</option>\
-        <option value="其他">其他</option></select><br>\
-      健康状况：<input id="health" value="' + student.health + '"><br>\
-      父亲职业：<input id="father_job" value="' + student.father_job + '"><br>\
-      母亲职业：<input id="mother_job" value="' + student.mother_job + '"><br>\
-      是否有兄弟姐妹：<br>\
-      <input id="has_brother_or_sister_no" name="has_brother_or_sister" type="radio" value="否">否</input><input id="has_brother_or_sister_yes" name="has_brother_or_sister" type="radio" value="是">是</input>，年龄<input id="brother_age" style="width:25px;"> 职业<input id="brother_job" style="width:35px;"><br>\
-      <b>以前是否接受过职业咨询：</b><br><input id="has_career_consulting_no" name="has_career_consulting" type="radio" value="否">否</input><input id="has_career_consulting_yes" name="has_career_consulting" type="radio" value="是">是</input><br>\
-      以前是否接受过心理咨询：<br><input id="has_mental_consulting_no" name="has_mental_consulting" type="radio" value="否">否</input><input id="has_mental_consulting_yes" name="has_mental_consulting" type="radio" value="是">是</input><br>\
-      目前是否在接受其他咨询：<br><input id="has_other_consulting_no" name="has_other_consulting" type="radio" value="否">否</input><input id="has_other_consulting_yes" name="has_other_consulting" type="radio" value="是">是</input>，为<input id="other_consulting_now" style="width:80px;"><br>\
-      是否有工作经验：<br>\
-      <input id="working_experience_1" name="working_experience" type="radio" value="1">有全职工作经验，</input><input id="working_period_1" style="width:25px;">年<br>\
-      <input id="working_experience_2" name="working_experience" type="radio" value="2">有兼职工作经验或做过义工，累计工作时间：</input><input id="working_period_2" style="width:50px;"><br>\
-      <input id="working_experience_3" name="working_experience" type="radio" value="3">没有任何工作经验</input><br><br>\
-      我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用以下哪些方法：（可以多选）<br>\
-      <input id="knowing_method_1" type="checkbox">与导师、辅导员交谈<br>\
-      <input id="knowing_method_2" type="checkbox">与同学交谈<br>\
-      <input id="knowing_method_3" type="checkbox">与家人交谈<br>\
-      <input id="knowing_method_4" type="checkbox">与相关行业在职人员交谈<br>\
-      <input id="knowing_method_5" type="checkbox">参加宣讲会、招聘会<br>\
-      <input id="knowing_method_6" type="checkbox">参加相关讲座和工作坊<br>\
-      <input id="knowing_method_7" type="checkbox">阅读报纸、书籍中的就业信息<br>\
-      <input id="knowing_method_8" type="checkbox">浏览求职网站<br>\
-      <input id="knowing_method_9" type="checkbox">选修职业辅导课程<br>\
-      <input id="knowing_method_10" type="checkbox">到就业指导中心寻求帮助<br>\
-      <input id="knowing_method_11" type="checkbox">向院系寻求相关就业资料<br>\
-      <input id="knowing_method_12" type="checkbox">参加有关的职业生涯团体<br>\
-      <input id="knowing_method_13" type="checkbox">参加过其他学生团体<br>\
-      <input id="knowing_method_14" type="checkbox">在用人单位实习或者兼职<br><br>\
-      <b>紧急联系人信息</b><br>\
-      <b>姓　　名：</b><input id="emergency_person" value="' + student.emergency_person + '"><br>\
-      <b>电　　话：</b><input id="emergency_mobile" value="' + student.emergency_mobile + '"><br>\
+      <div id="student_info">\
+        <div class="has_children" data-status="close">\
+          <span id="student_info_head">个人信息（点击展开）</span>\
+          <div class="children">\
+            <b>姓　　名：</b><input id="fullname" value="' + student.fullname + '"><br>\
+            <b>性　　别：</b><select id="gender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select><br>\
+            出生年月：<input id="birthday" value="' + student.birthday + '"><br>\
+            年　　龄：<input id="age" value="' + student.age + '"><br>\
+            民　　族：<input id="ethnic" value="' + student.ethnic + '"><br>\
+            入学年份：<input id="enter_year" value="' + student.enter_year + '"><br>\
+            生源地：<input id="source_place" value="' + student.source_place + '"><br>\
+            <b>院　　系：</b><input id="college" value="' + student.college + '"><br>\
+            原就读学校（本科/硕士）：<input id="original_school" value="' + student.original_school + '"><br>\
+            原专业（如有转换）：<input id="original_major" value="' + student.original_major + '"><br>\
+            <b>电子邮件：</b><input id="email" value="' + student.email + '"><br>\
+            <b>联系电话：</b><input id="mobile" value="' + student.mobile + '"><br>\
+            婚姻状况：<select id="marriage"><option value="">请选择</option><option value="单身">单身</option>\
+              <option value="恋爱">恋爱</option><option value="结婚">结婚</option>\
+              <option value="其他">其他</option></select><br>\
+            健康状况：<input id="health" value="' + student.health + '"><br>\
+            父亲职业：<input id="father_job" value="' + student.father_job + '"><br>\
+            母亲职业：<input id="mother_job" value="' + student.mother_job + '"><br>\
+            是否有兄弟姐妹：<br>\
+            <input id="has_brother_or_sister_no" name="has_brother_or_sister" type="radio" value="否">否</input><input id="has_brother_or_sister_yes" name="has_brother_or_sister" type="radio" value="是">是</input>，年龄<input id="brother_age" style="width:25px;"> 职业<input id="brother_job" style="width:35px;"><br>\
+            <b>以前是否接受过职业咨询：</b><br><input id="has_career_consulting_no" name="has_career_consulting" type="radio" value="否">否</input><input id="has_career_consulting_yes" name="has_career_consulting" type="radio" value="是">是</input><br>\
+            以前是否接受过心理咨询：<br><input id="has_mental_consulting_no" name="has_mental_consulting" type="radio" value="否">否</input><input id="has_mental_consulting_yes" name="has_mental_consulting" type="radio" value="是">是</input><br>\
+            目前是否在接受其他咨询：<br><input id="has_other_consulting_no" name="has_other_consulting" type="radio" value="否">否</input><input id="has_other_consulting_yes" name="has_other_consulting" type="radio" value="是">是</input>，为<input id="other_consulting_now" style="width:80px;"><br>\
+            是否有工作经验：<br>\
+            <input id="working_experience_1" name="working_experience" type="radio" value="1">有全职工作经验，</input><input id="working_period_1" style="width:25px;">年<br>\
+            <input id="working_experience_2" name="working_experience" type="radio" value="2">有兼职工作经验或做过义工，累计工作时间：</input><input id="working_period_2" style="width:50px;"><br>\
+            <input id="working_experience_3" name="working_experience" type="radio" value="3">没有任何工作经验</input><br><br>\
+            我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用以下哪些方法：（可以多选）<br>\
+            <input id="knowing_method_1" type="checkbox">与导师、辅导员交谈<br>\
+            <input id="knowing_method_2" type="checkbox">与同学交谈<br>\
+            <input id="knowing_method_3" type="checkbox">与家人交谈<br>\
+            <input id="knowing_method_4" type="checkbox">与相关行业在职人员交谈<br>\
+            <input id="knowing_method_5" type="checkbox">参加宣讲会、招聘会<br>\
+            <input id="knowing_method_6" type="checkbox">参加相关讲座和工作坊<br>\
+            <input id="knowing_method_7" type="checkbox">阅读报纸、书籍中的就业信息<br>\
+            <input id="knowing_method_8" type="checkbox">浏览求职网站<br>\
+            <input id="knowing_method_9" type="checkbox">选修职业辅导课程<br>\
+            <input id="knowing_method_10" type="checkbox">到就业指导中心寻求帮助<br>\
+            <input id="knowing_method_11" type="checkbox">向院系寻求相关就业资料<br>\
+            <input id="knowing_method_12" type="checkbox">参加有关的职业生涯团体<br>\
+            <input id="knowing_method_13" type="checkbox">参加过其他学生团体<br>\
+            <input id="knowing_method_14" type="checkbox">在用人单位实习或者兼职<br><br>\
+            <b>紧急联系人信息</b><br>\
+            <b>姓　　名：</b><input id="emergency_person" value="' + student.emergency_person + '"><br>\
+            <b>电　　话：</b><input id="emergency_mobile" value="' + student.emergency_mobile + '"><br>\
+            <br>\
+          </div>\
+        </div>\
+      </div>\
       <br>\
       <b>此次来最主要想解决的问题是什么？</b><br>\
       <textarea id="problem"></textarea><br>\
@@ -159,6 +171,18 @@ function makeReservationData(index) {
     </div>\
   ');
   $(function() {
+    $('.has_children').click(function() {
+      if ($(this).attr('data-status') === 'close') {
+        $(this).children('div').show();
+        $(this).attr('data-status', 'open');
+        $('#student_info_head').text('个人信息（点击收起）');
+      } else {
+        $(this).children('div').hide();
+        $(this).attr('data-status', 'close');
+        $('#student_info_head').text('个人信息（点击展开）');
+      }
+      // $(this).children('div').show().end().siblings().children('div').hide();
+    });
     $('#gender').val(student.gender);
     $('#marriage').val(student.marriage);
     if (student.has_brother_or_sister === '否') {
