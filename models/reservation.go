@@ -33,10 +33,10 @@ func (rs ReservationStatus) String() string {
 }
 
 type StudentExpectation struct {
-	Problem      string `bson:"problem"`
-	Expectation  string `bson:"expectation"`
-	ExpectedTime string `bson:"expected_time"`
-	Time time.Time `bson:"time"`
+	Problem      string    `bson:"problem"`
+	Expectation  string    `bson:"expectation"`
+	ExpectedTime string    `bson:"expected_time"`
+	Time         time.Time `bson:"time"`
 }
 
 type StudentFeedback struct {

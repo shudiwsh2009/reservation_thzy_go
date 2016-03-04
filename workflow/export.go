@@ -26,7 +26,7 @@ func ExportStudent(student *models.Student, reservation *models.Reservation, fil
 	knowingMethods := make([]string, 0)
 	knowingMethods = append(knowingMethods, "我们可以通过很多渠道了解与职业生涯有关的信息，最近一个月，你曾使用一下哪些方法：")
 	for _, i := range student.KnowingMethods {
-		knowingMethods = append(knowingMethods, models.KnowingMethods[i - 1])
+		knowingMethods = append(knowingMethods, models.KnowingMethods[i-1])
 	}
 	data = append(data, knowingMethods)
 	if reservation != nil {
@@ -49,10 +49,10 @@ func ExportReservations(reservations []*models.Reservation, filename string) err
 	data = append(data, []string{"序号", "日期", "星期", "时间段", "咨询师", "来访者姓名", "学号", "性别", "入学年份", "院系", "来访次数"})
 	for index, res := range reservations {
 		row := make([]string, 0)
-		row = append(row, strconv.Itoa(index + 1))
+		row = append(row, strconv.Itoa(index+1))
 		row = append(row, res.StartTime.In(utils.Location).Format(utils.DATE_PATTERN))
 		row = append(row, utils.Weekdays[res.StartTime.In(utils.Location).Weekday()])
-		row = append(row, res.StartTime.In(utils.Location).Format(utils.CLOCK_PATTERN) + " - " +
+		row = append(row, res.StartTime.In(utils.Location).Format(utils.CLOCK_PATTERN)+" - "+
 			res.EndTime.In(utils.Location).Format(utils.CLOCK_PATTERN))
 		if teacher, err := models.GetTeacherById(res.TeacherId); err == nil {
 			row = append(row, teacher.Fullname)
