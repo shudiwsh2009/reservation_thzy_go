@@ -79,7 +79,10 @@ func ExportStudent(student *models.Student, filename string) error {
 
 func ExportReservations(reservations []*models.Reservation, filename string) error {
 	data := make([][]string, 0)
-	data = append(data, []string{"序号", "日期", "星期", "时间段", "咨询师", "来访者姓名", "学号", "性别", "入学年份", "院系", "来访次数"})
+	data = append(data, []string{"序号", "日期", "星期", "时间段", "咨询师", "来访者姓名", "学号", "性别", "入学年份", "院系",
+		"问题", "期望效果", "期望咨询次数", "预约填写日期", "反馈问题1", "反馈问题2", "反馈问题3", "反馈问题4", "反馈问题5",
+		"反馈问题6", "反馈问题7",	"反馈问题8", "反馈问题9", "反馈问题10", "反馈问题11", "反馈问题12", "反馈问题13",
+		"反馈问题14", "帮助", "未达到预期", "反馈填写日期"})
 	for index, res := range reservations {
 		row := make([]string, 0)
 		row = append(row, strconv.Itoa(index+1))
@@ -98,6 +101,24 @@ func ExportReservations(reservations []*models.Reservation, filename string) err
 			row = append(row, student.Gender)
 			row = append(row, student.EnterYear)
 			row = append(row, student.College)
+		} else {
+			row = append(row, "")
+			row = append(row, "")
+			row = append(row, "")
+			row = append(row, "")
+			row = append(row, "")
+		}
+		row = append(row, res.StudentExpectation.Problem)
+		row = append(row, res.StudentExpectation.Expectation)
+		row = append(row, res.StudentExpectation.ExpectedTime)
+		row = append(row, res.StudentExpectation.Time.In(utils.Location).Format(utils.DATE_PATTERN))
+		if !res.StudentFeedback.IsEmpty() {
+			for _, s := range res.StudentFeedback.Scores {
+				row = append(row, strconv.Itoa(s))
+			}
+			row = append(row, res.StudentFeedback.Help)
+			row = append(row, res.StudentFeedback.Drawback)
+			row = append(row, res.StudentFeedback.Time.In(utils.Location).Format(utils.DATE_PATTERN))
 		}
 		data = append(data, row)
 	}

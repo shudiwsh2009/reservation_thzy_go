@@ -385,6 +385,45 @@ func (al *AdminLogic) ExportReservationsByAdmin(reservationIds []string, userId 
 	return "/" + utils.ExportFolder + filename, nil
 }
 
+// 管理员导出咨询
+func (al *AdminLogic) ExportReservationsPeriodByAdmin(startDate string, endDate string,
+	userId string, userType models.UserType) (string, error) {
+	if len(startDate) == 0 {
+		return "", errors.New("开始日期为空")
+	} else if len(endDate) == 0 {
+		return "", errors.New("结束日期为空")
+	} else if len(userId) == 0 {
+		return "", errors.New("请先登录")
+	} else if userType != models.ADMIN {
+		return "", errors.New("权限不足")
+	}
+	admin, err := models.GetAdminById(userId)
+	if err != nil || admin.UserType != models.ADMIN {
+		return "", errors.New("管理员账户出错,请联系技术支持")
+	}
+	start, err := time.ParseInLocation(utils.DATE_PATTERN, startDate, utils.Location)
+	if err != nil {
+		return "", errors.New("开始日期格式错误")
+	}
+	end, err := time.ParseInLocation(utils.DATE_PATTERN, endDate, utils.Location)
+	if err != nil {
+		return "", errors.New("结束日期格式错误")
+	}
+	end = end.AddDate(0, 0, 1)
+	reservations, err := models.GetReservatedReservationsBetweenTime(start, end)
+	if err != nil {
+		return "", errors.New("获取数据失败")
+	}
+	filename := "export_" + time.Now().In(utils.Location).Format(utils.DATE_PATTERN) + utils.CsvSuffix
+	if len(reservations) == 0 {
+		return "", nil
+	}
+	if err = workflow.ExportReservations(reservations, filename); err != nil {
+		return "", err
+	}
+	return "/" + utils.ExportFolder + filename, nil
+}
+
 // 查找咨询师
 // 查找顺序:全名 > 工号 > 手机号
 func (al *AdminLogic) SearchTeacherByAdmin(teacherFullname string, teacherUsername string, teacherMobile string,
