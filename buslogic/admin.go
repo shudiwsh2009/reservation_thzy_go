@@ -274,37 +274,6 @@ func (al *AdminLogic) DeleteStudentAccountByAdmin(studentId string, userId strin
 	return nil
 }
 
-// 管理员导出知情同意书
-func (al *AdminLogic) ExportReservatingStudentInfoByAdmin(reservationId string, userId string, userType models.UserType) (string, error) {
-	if len(userId) == 0 {
-		return "", errors.New("请先登录")
-	} else if userType != models.ADMIN {
-		return "", errors.New("权限不足")
-	} else if len(reservationId) == 0 {
-		return "", errors.New("咨询已下架")
-	}
-	admin, err := models.GetAdminById(userId)
-	if err != nil || admin.UserType != models.ADMIN {
-		return "", errors.New("管理员账户出错,请联系技术支持")
-	}
-	reservation, err := models.GetReservationById(reservationId)
-	if err != nil {
-		return "", errors.New("咨询已下架")
-	} else if reservation.Status != models.RESERVATED {
-		return "", errors.New("咨询未被预约")
-	}
-	student, err := models.GetStudentById(reservation.StudentId)
-	if err != nil {
-		return "", errors.New("学生未注册")
-	}
-	filename := "student_" + student.Username + "_" +
-		reservation.StartTime.In(utils.Location).Format(utils.DATE_PATTERN) + utils.CsvSuffix
-	if err = workflow.ExportStudent(student, reservation, filename); err != nil {
-		return "", err
-	}
-	return "/" + utils.ExportFolder + filename, nil
-}
-
 // 管理员导出学生信息
 func (al *AdminLogic) ExportStudentByAdmin(studentId string, userId string, userType models.UserType) (string, error) {
 	if len(userId) == 0 {
@@ -323,7 +292,7 @@ func (al *AdminLogic) ExportStudentByAdmin(studentId string, userId string, user
 		return "", errors.New("学生未注册")
 	}
 	filename := "student_" + student.Username + "_" + utils.GetNow().Format(utils.DATE_PATTERN) + utils.CsvSuffix
-	if err = workflow.ExportStudent(student, nil, filename); err != nil {
+	if err = workflow.ExportStudent(student, filename); err != nil {
 		return "", err
 	}
 	return "/" + utils.ExportFolder + filename, nil

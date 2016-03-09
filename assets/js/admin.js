@@ -629,14 +629,10 @@ function showStudent(student, reservation, feedback) {
         期望的咨询次数约为：' + reservation.expected_time + '<br>\
         填写日期：' + reservation.time + '<br>\
       ');
-      $('#export_' + student.id).click(function() {
-        exportReservatingStudentInfo(reservation.id);
-      });
-    } else {
-      $('#export_' + student.id).click(function() {
-        exportStudent(student.id);
-      });
     }
+    $('#export_' + student.id).click(function() {
+      exportStudent(student.id);
+    });
     if (feedback) {
 
     }
@@ -739,18 +735,6 @@ function deleteStudentAccountSuccess(studentId) {
     </div>\
   ');
   optimize('#pop_delete_student_account_success');
-}
-
-function exportReservatingStudentInfo(reservationId) {
-  $.post('/admin/reservation/student/export', {
-    reservation_id: reservationId,
-  }, function(data, textStatus, xhr) {
-    if (data.state === 'SUCCESS') {
-      window.open(data.url);
-    } else {
-      alert(data.message);
-    }
-  });
 }
 
 function exportStudent(studentId) {

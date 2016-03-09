@@ -279,22 +279,6 @@ func DeleteStudentAccountByAdmin(w http.ResponseWriter, r *http.Request, userId 
 	return result
 }
 
-func ExportReservatingStudentInfoByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
-	reservationId := r.PostFormValue("reservation_id")
-
-	var result = map[string]interface{}{"state": "SUCCESS"}
-	var al = buslogic.AdminLogic{}
-
-	url, err := al.ExportReservatingStudentInfoByAdmin(reservationId, userId, userType)
-	if err != nil {
-		ErrorHandler(w, r, err)
-		return nil
-	}
-	result["url"] = url
-
-	return result
-}
-
 func ExportStudentByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
 	studentId := r.PostFormValue("student_id")
 
