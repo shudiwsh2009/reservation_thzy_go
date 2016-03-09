@@ -48,7 +48,7 @@ type StudentFeedback struct {
 }
 
 func (sf StudentFeedback) IsEmpty() bool {
-	return len(sf.ConsultingCount) == 0 || sf.Scores == nil || len(sf.Scores) == 0
+	return len(sf.ConsultingCount) == 0 || sf.Scores == nil || len(sf.Scores) != 14
 }
 
 func (sf StudentFeedback) ToJson() map[string]interface{} {
