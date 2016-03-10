@@ -388,13 +388,13 @@ func ExportReservationsByAdmin(w http.ResponseWriter, r *http.Request, userId st
 }
 
 func ExportReservationsPeriodByAdmin(w http.ResponseWriter, r *http.Request, userId string, userType models.UserType) interface{} {
-	startDate := r.PostFormValue("start_date")
-	endDate := r.PostFormValue("end_date")
+	fromDate := r.PostFormValue("from_date")
+	toDate := r.PostFormValue("to_date")
 
 	var result = map[string]interface{}{"state": "SUCCESS"}
 	var al = buslogic.AdminLogic{}
 
-	url, err := al.ExportReservationsPeriodByAdmin(startDate, endDate, userId, userType)
+	url, err := al.ExportReservationsPeriodByAdmin(fromDate, toDate, userId, userType)
 	if err != nil {
 		ErrorHandler(w, r, err)
 		return nil

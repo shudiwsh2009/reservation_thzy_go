@@ -749,6 +749,19 @@ function exportStudent(studentId) {
   });
 }
 
+function exportPeriodReservations() {
+  $.post('/admin/reservation/export/period', {
+    from_date: $('#export_from').val(),
+    to_date: $('#export_to').val(),
+  }, function(data, textStatus, xhr) {
+    if (data.state === 'SUCCESS') {
+      window.open(data.url);
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
 Object.size = function(obj) {
   var size = 0, key;
   for (key in obj) {
