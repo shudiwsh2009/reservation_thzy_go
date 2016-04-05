@@ -1,8 +1,8 @@
 package utils
 
 const (
-	SMS_UID       = "shudiwsh2009"
-	SMS_KEY       = "946fee2e7ad699b065f1"
+	SMS_UID       = ""
+	SMS_KEY       = ""
 	MAIL_SMTP     = "smtp.qq.com"
 	MAIL_USERNAME = "thzyfzzx@qq.com"
 	MAIL_PASSWORD = "zztwhqsqpjeydche"
