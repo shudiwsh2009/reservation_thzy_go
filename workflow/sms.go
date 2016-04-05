@@ -111,7 +111,7 @@ func sendSMS(mobile string, content string) error {
 	if m := utils.IsMobile(mobile); !m {
 		return errors.New("手机号格式不正确")
 	}
-	appEnv := os.Getenv("RESERVATION_THXL_ENV")
+	appEnv := os.Getenv("RESERVATION_THZY_ENV")
 	if !strings.EqualFold(appEnv, "ONLINE") {
 		fmt.Printf("Send SMS: \"%s\" to %s.\n", content, mobile)
 		return nil
