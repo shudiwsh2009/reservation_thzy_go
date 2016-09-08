@@ -17,7 +17,7 @@ cp -rf $GOPATH/src/github.com/shudiwsh2009/reservation_thzy_go/templates ./templ
 cp -rf $GOPATH/src/github.com/shudiwsh2009/reservation_thzy_go/assets ./assets
 cd ~/thzyfzzx_go/server
 chmod a+x ./server.run
-nohup ./server.run --app-env="ONLINE" > ~/thzyfzzx_go/log/server.log 2>&1 & echo $! > ~/thzyfzzx_go/run.pid &
+nohup ./server.run --app-env="ONLINE" --mail-smtp="smtp.qq.com" --mail-username="thzyfzzx@qq.com" --mail-password="zztwhqsqpjeydche" > ~/thzyfzzx_go/log/server.log 2>&1 & echo $! > ~/thzyfzzx_go/run.pid &
 
 echo "#deploy reminder"
 cd ~/thzyfzzx_go
