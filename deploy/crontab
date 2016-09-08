@@ -1,2 +1,0 @@
-0 20 * * * . /etc/profile;/root/code/go/src/github.com/shudiwsh2009/reservation_thzy_go_reminder/reservation_thzy_go_reminder
-0 22 * * * . /etc/profile;/root/dumpdatabase.sh

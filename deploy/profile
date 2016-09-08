@@ -1,2 +1,5 @@
 #!/bin/bash
 export RESERVATION_THZY_ENV="ONLINE"
+export MAIL_SMTP     = "smtp.qq.com"
+export MAIL_USERNAME = "thzyfzzx@qq.com"
+export MAIL_PASSWORD = "zztwhqsqpjeydche"

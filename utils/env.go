@@ -1,9 +1,10 @@
 package utils
 
-const (
+var (
+	APP_ENV       = ""
 	SMS_UID       = ""
 	SMS_KEY       = ""
-	MAIL_SMTP     = "smtp.qq.com"
-	MAIL_USERNAME = "thzyfzzx@qq.com"
-	MAIL_PASSWORD = "zztwhqsqpjeydche"
+	MAIL_SMTP     = ""
+	MAIL_USERNAME = ""
+	MAIL_PASSWORD = ""
 )
