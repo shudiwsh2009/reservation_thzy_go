@@ -13,7 +13,7 @@ const (
 	DefaultStudentExportExcelFilename     = "student_export_template.xlsx"
 	DefaultReservationExportExcelFilename = "reservation_export_template.xlsx"
 	DefaultTimetableExportExcelFilename   = "timetable_export_template.xlsx"
-	ExportFolder                          = "assets/export/"
+	ExportFolder                          = "../assets/export/"
 	ExcelSuffix                           = ".xlsx"
 	CsvSuffix                             = ".csv"
 )
