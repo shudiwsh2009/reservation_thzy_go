@@ -92,9 +92,22 @@ func main() {
 	utils.MAIL_PASSWORD = *mailPassword
 	fmt.Println(utils.APP_ENV, utils.SMS_UID, utils.SMS_KEY, utils.MAIL_SMTP, utils.MAIL_USERNAME, utils.MAIL_PASSWORD)
 	// 数据库连接
-	session, err := mgo.Dial("127.0.0.1:27017")
+	mongoDbDialInfo := mgo.DialInfo{
+		Addrs:		[]string{"127.0.0.1:27017"},
+		Timeout:	60 * time.Second,
+		Database:	"admin",
+		Username:	"admin",
+		Password:	"THZYFZZX",
+	}
+	var session *mgo.Session
+	var err error
+	if utils.APP_ENV == "ONLINE" {
+		session, err = mgo.DialWithInfo(&mongoDbDialInfo)
+	} else {
+		session, err = mgo.Dial("127.0.0.1:27017")
+	}
 	if err != nil {
-		fmt.Errorf("连接数据库失败：%v", err)
+		fmt.Printf("连接数据库失败：%v\n", err)
 		return
 	}
 	defer session.Close()
@@ -102,7 +115,7 @@ func main() {
 	models.Mongo = session.DB("reservation_thzy")
 	// 时区
 	if utils.Location, err = time.LoadLocation("Asia/Shanghai"); err != nil {
-		fmt.Errorf("初始化时区失败：%v", err)
+		fmt.Printf("初始化时区失败：%v\n", err)
 		return
 	}
 
